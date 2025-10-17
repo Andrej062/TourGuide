@@ -32,12 +32,13 @@ a#Contact{
 .hero-text {
     padding: 2rem;
     width: 350px;
-    background-color: rgba(255, 255, 255, 30%);
+    background-color: rgba(255, 255, 255, 60%);
     /* background-color: transparent; */
     text-align: center;
     box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2), -10px -10px 10px rgba(0, 0, 0, 0.1), 10px -10px 10px rgba(0, 0, 0, 0.1), -10px 10px 10px rgba(0, 0, 0, 0.1);
     border-radius: 25px;
     margin-top: -7.5rem ;
+    font-size: 18px;
 }
 .hero {
     /* margin-top: 10rem; */
