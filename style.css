@@ -91,6 +91,7 @@ input:hover{
     padding: 20px;
     scrollbar-width: none;
     scroll-snap-type: x mandatory;
+    /* justify-content: center; */
 }
 .gallery-container::-webkit-scrollbar {
     display: none;
@@ -108,12 +109,29 @@ input:hover{
     height: 480px;
     object-fit: cover;
     display: block;
-    /* transition: ease-in-out 0.2s; */
+    transition: transform 0.3s ease;
 }
 .gallery-item img:hover {
-    transform: scale(1.2);
-    width: 160px;
-    height: 240px;
+    transform: scale(0.5);
+}
+.tour-info {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  color: #333;
+  background-color: rgba(255, 255, 255, 0.85);
+  border-radius: 15px;
+  padding: 0.5rem;
+  margin-top: 1rem;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+.gallery-item:hover img {
+  transform: scale(0.9) translateY(-20px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+}
+.gallery-item:hover .tour-info {
+  opacity: 1;
+  transform: translateY(0);
 }
 .hero-image {
     background-image: url('pics/bergen.jpg');
