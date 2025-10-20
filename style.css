@@ -108,6 +108,12 @@ input:hover{
     height: 480px;
     object-fit: cover;
     display: block;
+    /* transition: ease-in-out 0.2s; */
+}
+.gallery-item img:hover {
+    /* transform: scale(1.2); */
+    width: 160px;
+    height: 240px;
 }
 .hero-image {
     background-image: url('pics/bergen.jpg');
