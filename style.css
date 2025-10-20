@@ -64,9 +64,9 @@ input:hover{
     border: 1px solid rgba(54, 122, 240, 0.5);
     transform: scale(1.05);
 }
-#date{
-    width: 150px;
-    height: 60px;
+.button{
+    width: 90px;
+    height: 30px;
     background-color: rgb(54, 122, 240, 59%);
     box-shadow: 1px 1px 0.5px rgba(0, 0, 0, 0.2), -1px -1px 0.5px rgba(0, 0, 0, 0.1), 1px -1px 0.5px rgba(0, 0, 0, 0.1), -1px 1px 0.5px rgba(0, 0, 0, 0.1);
     border-radius: 25px;
@@ -77,10 +77,10 @@ input:hover{
     transition: ease-in-out 0.2s;
     font-size: 20px;
     font-weight: 500;
-}
-#date:hover{
-    background-color: rgb(54, 122, 240, 0.8);
     color: white;
+}
+.button:hover{
+    background-color: rgb(54, 122, 240, 0.8);
     transform: scale(1.1);
 }
 .gallery-container {
