@@ -84,33 +84,36 @@ input:hover{
     transform: scale(1.1);
 }
 .gallery-container {
-    margin-top: 1rem;
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 2.1rem;
     padding: 20px;
+    scrollbar-width: none;
+    scroll-snap-type: x mandatory;
+}
+.gallery-container::-webkit-scrollbar {
+    display: none;
+}
+.gallery-item {
+    flex: 0 0 auto;
+    scroll-snap-align: center;
 }
 .gallery-item img {
     margin: 10px;
     border-radius: 15px;
     overflow: hidden;
     box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
-    width: 300px;
-    height: 400px;
+    width: 320px;
+    height: 480px;
     object-fit: cover;
     display: block;
 }
 .hero-image {
     background-image: url('pics/bergen.jpg');
     width: 100%;
-<<<<<<< HEAD
-    height: 100vh; /* делает картинку во всю высоту экрана */
-    background-size: cover; /* заполняет экран, сохраняя пропорции */
-=======
     height: 100vh;
     background-size: cover;
->>>>>>> 597ab3e80953cb24f7ed3d06eb8a313e3a66c4d8
     background-position: center;
     background-repeat: no-repeat;
     display: flex;
