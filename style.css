@@ -104,14 +104,13 @@ input:hover{
 .hero-image {
     background-image: url('pics/bergen.jpg');
     width: 100%;
-    height: 700px;
-    background-size: cover;
+    height: 100vh; /* делает картинку во всю высоту экрана */
+    background-size: cover; /* заполняет экран, сохраняя пропорции */
     background-position: center;
     background-repeat: no-repeat;
     display: flex;
     justify-content: center;
     align-items: center;
-    /* border-radius: 20px; */
 }
 input::placeholder {
     text-align: center;
