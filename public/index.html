@@ -15,6 +15,10 @@
         <a href="about.html">About</a>
         <a id="Contact" href="#">Contact</a>
         <input type="text" id="destination-search" placeholder="Destination?">
+
+    <div id="cart-icon">
+      🛒 <span id="cart-count">0</span>
+    </div>
     </nav>
   </header>
 
@@ -97,5 +101,15 @@
     </div>
   </section>
 
+  <div id="cart-modal" class="cart-modal">
+    <div class="cart-content">
+      <span id="close-cart">&times;</span>
+      <h2>Your Tours</h2>
+      <ul id="cart-items"></ul>
+      <button id="checkout-btn" class="button">Checkout</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
