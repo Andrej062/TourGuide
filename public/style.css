@@ -175,7 +175,7 @@ input::placeholder {
     align-items: center;
     justify-content: flex-start;
     padding-left: 3rem;
-    color: #fff;
+    color: white;
 }
 .banner-text ul {
     list-style: none;
@@ -185,7 +185,7 @@ input::placeholder {
     gap: 2rem;
 }
 .banner-text a {
-    color: #fff;
+    color: white;
     font-weight: 600;
 }
 .text{
@@ -225,7 +225,7 @@ input::placeholder {
   background-color: rgba(0, 0, 0, 0.6);
 }
 .cart-content {
-  background-color: #fff;
+  background-color: white;
   margin: 10% auto;
   padding: 20px;
   border-radius: 20px;
