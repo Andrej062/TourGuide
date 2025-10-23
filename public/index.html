@@ -112,5 +112,49 @@
   </div>
 
   <script src="script.js"></script>
+  
+<div id="contact-modal" class="modal">
+  <div class="modal-content">
+    <span id="close-contact" class="close">&times;</span>
+    <h2>Contact Us</h2>
+    <p><strong>Email:</strong> tourguide@company.com</p>
+    <p><strong>Phone:</strong> +47 123 456 789</p>
+    <hr>
+    <h3>Leave a Request</h3>
+    <form id="contact-form">
+      <input type="text" id="name" placeholder="Your Name" required>
+      <input type="email" id="email" placeholder="Your Email" required>
+      <textarea id="message" placeholder="Your Message" required></textarea>
+      <button type="submit">Send</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  const contactBtn = document.getElementById('Contact');
+  const contactModal = document.getElementById('contact-modal');
+  const closeContact = document.getElementById('close-contact');
+  const contactForm = document.getElementById('contact-form');
+
+  contactBtn.addEventListener('click', () => {
+    contactModal.style.display = 'flex';
+  });
+
+  closeContact.addEventListener('click', () => {
+    contactModal.style.display = 'none';
+  });
+
+  window.addEventListener('click', (e) => {
+    if (e.target === contactModal) contactModal.style.display = 'none';
+  });
+
+  contactForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    alert('Your message has been sent! We will get back to you soon.');
+    contactForm.reset();
+    contactModal.style.display = 'none';
+  });
+</script>
+
 </body>
 </html>

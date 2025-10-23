@@ -1,27 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cart</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>Your Tour Cart</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .cart-page {
+      max-width: 700px;
+      margin: 4rem auto;
+      background: rgba(113, 201, 249, 0.1);
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    }
+    h1 {
+      text-align: center;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      margin: 10px 0;
+      padding: 10px;
+      background: white;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    button {
+      background: rgba(54, 122, 240, 0.8);
+      border: none;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-    
-    <header>
-    <nav>
-        <a href="index.html">Explore</a>
-        <a href="#">Rating</a>
-        <a href="#">About</a>
-        <a id="Contact" href="#">Contact</a>
-        <input type="text" placeholder="Destination?">
-    </nav>
-  </header>
+  <div class="cart-page">
+    <h1>Your Selected Tours</h1>
+    <ul id="cart-list"></ul>
+    <button id="back-btn">Back to Home</button>
+    <button id="confirm-btn">Confirm Order</button>
+  </div>
 
-    <div class="text">
-        <h1>Your Cart</h1>
-        <p>Your selected tours will appear here.</p>
-    </div>
-    <button class="button">Confirm</button>
+  <script>
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const cartList = document.getElementById('cart-list');
+    const backBtn = document.getElementById('back-btn');
+    const confirmBtn = document.getElementById('confirm-btn');
+
+    function renderCart() {
+      cartList.innerHTML = '';
+      if (cart.length === 0) {
+        cartList.innerHTML = '<li>Your cart is empty.</li>';
+        return;
+      }
+      cart.forEach((item, index) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <span>${item.name}</span>
+          <button onclick="removeItem(${index})">Remove</button>
+        `;
+        cartList.appendChild(li);
+      });
+    }
+
+    function removeItem(index) {
+      cart.splice(index, 1);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      renderCart();
+    }
+
+    backBtn.addEventListener('click', () => {
+      window.location.href = 'index.html';
+    });
+
+    confirmBtn.addEventListener('click', () => {
+      if (cart.length === 0) {
+        alert('Your cart is empty!');
+        return;
+      }
+      alert('Thank you for your order! We will contact you soon.');
+      localStorage.removeItem('cart');
+      window.location.href = 'index.html';
+    });
+
+    renderCart();
+  </script>
 </body>
 </html>

@@ -18,14 +18,12 @@ window.addEventListener('click', (e) => {
         cartModal.style.display = 'none';
 });
 
-document.querySelectorAll('.button').forEach((btn)=> {
+document.querySelectorAll('.button').forEach((btn) => {
     btn.addEventListener('click', (e) => {
         const tourInfo = e.target.closest('.tour-info');
         const name = tourInfo.querySelector('h3').textContent;
         const desc = tourInfo.querySelector('p').textContent;
-
-        const tour = { name, desc};
-
+        const tour = { name, desc };
         cart.push(tour);
         updateCart();
         alert(`"${name}" added to your cart!`);
@@ -39,8 +37,8 @@ function updateCart() {
         li.innerHTML = `
             ${item.name}
             <button onclick="removeItem(${index})">Remove</button>
-            `;
-            cartItemsList.appendChild(li);
+        `;
+        cartItemsList.appendChild(li);
     });
     cartCount.textContent = cart.length;
 }
@@ -49,13 +47,12 @@ function removeItem(index) {
     cart.splice(index, 1);
     updateCart();
 }
+
 checkoutBtn.addEventListener('click', () => {
     if (cart.length === 0) {
         alert('Your cart is empty!');
         return;
     }
-    alert('Thank you for your order! We will contact you soon.');
-    cart = [];
-    updateCart();
-    cartModal.style.display = 'none';
+    localStorage.setItem('cart', JSON.stringify(cart));
+    window.location.href = 'cart.html';
 });
