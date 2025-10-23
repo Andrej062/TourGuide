@@ -20,6 +20,7 @@ a {
     padding: 10px 15px;
     border-radius: 30px;
     transition: ease-in-out 0.2s;
+    font-weight: 600;
 }
 a:hover {
     background-color: rgba(113, 201, 249, 0.8);
