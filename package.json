@@ -1,0 +1,24 @@
+{
+  "name": "tourguide",
+  "version": "1.0.0",
+  "description": "Tours in Bergen",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Andrej062/TourGuide.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Andrej062/TourGuide/issues"
+  },
+  "homepage": "https://github.com/Andrej062/TourGuide#readme",
+  "dependencies": {
+    "better-sqlite3": "^12.4.1",
+    "express": "^5.1.0"
+  }
+}
