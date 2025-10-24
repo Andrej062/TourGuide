@@ -134,7 +134,7 @@ input:hover{
   transform: translateY(0);
 }
 .hero-image {
-    /* background-image: url('tourguide/pics/bergen.jpg'); */
+    background-image: url('tourguide/pics/bergen.jpg');
     width: 100%;
     height: 100vh;
     background-size: cover;
