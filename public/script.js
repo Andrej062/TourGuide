@@ -56,11 +56,15 @@ checkoutBtn.addEventListener('click', () => {
     localStorage.setItem('cart', JSON.stringify(cart));
     window.location.href = '/public/cart.html';
 });
+
+// --- Burger menu ---
 const menuToggle = document.getElementById('menu-toggle');
 const navLeft = document.querySelector('.nav-left');
 const navRight = document.querySelector('.nav-right');
 
 menuToggle.addEventListener('click', () => {
+  menuToggle.classList.toggle('active');
   navLeft.classList.toggle('show');
   navRight.classList.toggle('show');
 });
+
