@@ -54,5 +54,13 @@ checkoutBtn.addEventListener('click', () => {
         return;
     }
     localStorage.setItem('cart', JSON.stringify(cart));
-    window.location.href = 'public/cart.html';
+    window.location.href = '/public/cart.html';
+});
+const menuToggle = document.getElementById('menu-toggle');
+const navLeft = document.querySelector('.nav-left');
+const navRight = document.querySelector('.nav-right');
+
+menuToggle.addEventListener('click', () => {
+  navLeft.classList.toggle('show');
+  navRight.classList.toggle('show');
 });
