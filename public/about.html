@@ -3,26 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About us</title>
+    <title>About TourGuide - Our Story</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
     <header>
-    <nav>
-        <a href="index.html">Explore</a>
-        <a href="#">Rating</a>
-        <a href="about.html">About</a>
-        <a id="Contact" href="#">Contact</a>
-        <input type="text" placeholder="Destination?">
-    </nav>
-  </header>
-  <div class="text">
-    <h1>About TourGuide</h1>
-    <p>Welcome to TourGuide, your ultimate destination for exploring the best tours in Bergen!
-        Our mission is to provide travelers with unforgettable experiences by showcasing the most scenic and exciting
-        tours the city has to offer. Whether you're looking to hike up Ulriken, take a funicular ride to Mount Fløyen, or stroll
-        through the beautiful Nordnes Park, we've got you covered. Our team is dedicated to curating top-notch tours that
-        highlight the natural beauty and cultural richness of Bergen. Join us and embark on a journey of discovery and adventure!</p>
+        <nav class="navbar">
+            <div class="nav-left">
+                <a href="index.html">Explore</a>
+                <a href="#">Rating</a>
+                <a href="about.html">About</a>
+            </div>
+    
+            <input type="text" id="destination-search" placeholder="Destination?">
+    
+            <div class="nav-right">
+                <a id="Contact" href="#">Contact</a>
+                <div id="cart-icon">
+                    🛒 <span id="cart-count">0</span>
+                </div>
+            </div>
+    
+            <div class="menu-toggle" id="menu-toggle">☰</div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="about-hero-page">
+            <div class="about-hero-content">
+                <h1>About TourGuide: Your Gateway to Bergen</h1>
+                <p>Welcome to **TourGuide**, your ultimate destination for exploring the best tours in Bergen! Our mission is to provide travelers with unforgettable experiences by showcasing the most scenic and exciting tours the city has to offer. Whether you're looking to hike up Ulriken, take a funicular ride to Mount Fløyen, or stroll through the beautiful Nordnes Park, we've got you covered. Our team is dedicated to curating top-notch tours that highlight the natural beauty and cultural richness of Bergen. Join us and embark on a journey of discovery and adventure!</p>
+            </div>
+        </section>
+
+        <section class="mission-values">
+            <h2>🌍 Our Mission and Core Values</h2>
+            <div class="mission-container">
+                <div class="mission-text">
+                    <h3>Showcasing the Best of Bergen</h3>
+                    <p>Our primary goal is to make your journey through Bergen as rich and comfortable as possible. We focus on the **quality** of our routes, **safety**, and the **sustainability** of our tours, ensuring every adventure is not only thrilling but also responsible.</p>
+                </div>
+                <div class="mission-image">
+                    <img src="../pics/bryggen.jpg" alt="Historic Bryggen Wharf in Bergen">
+                </div>
+            </div>
+        </section>
+        
+        <section class="team">
+            <h2>Meet Our Dedicated Team</h2>
+            <div class="team-container">
+                <div class="team-member">
+                    <img src="../pics/team_placeholder_1.jpg" alt="Photo of the Founder">
+                    <h3>Anna</h3>
+                    <p>Founder & Head Guide</p>
+                </div>
+                <div class="team-member">
+                    <img src="../pics/team_placeholder_2.jpg" alt="Photo of the Tour Manager">
+                    <h3>Sven</h3>
+                    <p>Routes Manager</p>
+                </div>
+                <div class="team-member">
+                    <img src="../pics/team_placeholder_3.jpg" alt="Photo of Customer Support">
+                    <h3>Karina</h3>
+                    <p>Customer Support</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="call-to-action">
+            <h3>Ready to Start Your Adventure?</h3>
+            <a href="index.html" class="button cta-button">Explore Tours</a>
+        </section>
+
+    </main>
+    
+    <section class="bottom-banner">
+        <img class="bottom-banner-img" src="../pics/bryggen.jpg" alt="Bergen Bryggen">
+        <div class="banner-lay">
+            <div class="banner-text">
+                <ul>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="about.html">About us</a></li>
+                    <li><a href="#">Apply to work</a></li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <div id="cart-modal" class="cart-modal">
+        <div class="cart-content">
+            <span id="close-cart">&times;</span>
+            <h2>Your Tours</h2>
+            <ul id="cart-items"></ul>
+            <button id="checkout-btn" class="button">Checkout</button>
+        </div>
     </div>
+
+    <div id="contact-modal" class="modal">
+        <div class="modal-content">
+            <span id="close-contact" class="close">&times;</span>
+            <h2>Contact Us</h2>
+            <p><strong>Email:</strong> tourguide@company.com</p>
+            <p><strong>Phone:</strong> +47 123 456 789</p>
+            <hr>
+            <h3>Leave a Request</h3>
+            <form id="contact-form">
+                <input type="text" id="name" placeholder="Your Name" required>
+                <input type="email" id="email" placeholder="Your Email" required>
+                <textarea id="message" placeholder="Your Message" required></textarea>
+                <button type="submit">Send</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script> <script>
+        // Inline script for Contact Modal functionality (as in your original code)
+        const contactBtn = document.getElementById('Contact');
+        const contactModal = document.getElementById('contact-modal');
+        const closeContact = document.getElementById('close-contact');
+        const contactForm = document.getElementById('contact-form');
+    
+        contactBtn.addEventListener('click', () => {
+          contactModal.style.display = 'flex';
+        });
+    
+        closeContact.addEventListener('click', () => {
+          contactModal.style.display = 'none';
+        });
+    
+        window.addEventListener('click', (e) => {
+          if (e.target === contactModal) contactModal.style.display = 'none';
+        });
+    
+        contactForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          alert('Your message has been sent! We will get back to you soon.');
+          contactForm.reset();
+          contactModal.style.display = 'none';
+        });
+
+        // Basic Menu Toggle Script for this page (assuming the full script.js is not loaded immediately)
+        const menuToggle = document.getElementById('menu-toggle');
+        const navLeft = document.querySelector('.nav-left');
+        const navRight = document.querySelector('.nav-right');
+
+        if (menuToggle) {
+            menuToggle.addEventListener('click', () => {
+                menuToggle.classList.toggle('active');
+                navLeft.classList.toggle('show');
+                navRight.classList.toggle('show');
+            });
+        }
+    </script>
+
 </body>
 </html>
