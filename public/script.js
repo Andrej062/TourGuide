@@ -58,7 +58,6 @@ checkoutBtn.addEventListener('click', () => {
   window.location.href = `${basePath}cart.html`;
 });
 
-// --- Burger menu ---
 const menuToggle = document.getElementById('menu-toggle');
 const navLeft = document.querySelector('.nav-left');
 const navRight = document.querySelector('.nav-right');
