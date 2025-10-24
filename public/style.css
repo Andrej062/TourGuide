@@ -34,7 +34,6 @@ a#Contact{
     padding: 2rem;
     width: 350px;
     background-color: rgba(255, 255, 255, 60%);
-    /* background-color: transparent; */
     text-align: center;
     box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2), -10px -10px 10px rgba(0, 0, 0, 0.1), 10px -10px 10px rgba(0, 0, 0, 0.1), -10px 10px 10px rgba(0, 0, 0, 0.1);
     border-radius: 25px;
@@ -93,7 +92,6 @@ input:hover{
     scroll-snap-type: x mandatory;
     background-color: rgba(113, 201, 249, 59%);
     border-radius: 40px;
-    /* justify-content: center; */
 }
 .gallery-container::-webkit-scrollbar {
     display: none;
