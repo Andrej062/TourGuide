@@ -54,7 +54,7 @@ checkoutBtn.addEventListener('click', () => {
         return;
     }
     localStorage.setItem('cart', JSON.stringify(cart));
-    window.location.href = 'public/cart.html';
+    window.location.href = 'cart.html';
 });
 
 // --- Burger menu ---
