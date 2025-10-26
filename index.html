@@ -103,7 +103,7 @@
     <div class="banner-lay">
         <div class="banner-text">
           <ul>
-            <li><a href="#">Contact</a></li>
+            <li><a id="ContactFooter" href="#">Contact</a></li>
             <li><a href="public/about.html">About us</a></li>
             <li><a href="#">Apply to work</a></li>
           </ul>
@@ -141,13 +141,18 @@
 
 <script>
   const contactBtn = document.getElementById('Contact');
+  const contactBtnFooter = document.getElementById('ContactFooter');
   const contactModal = document.getElementById('contact-modal');
   const closeContact = document.getElementById('close-contact');
   const contactForm = document.getElementById('contact-form');
 
-  contactBtn.addEventListener('click', () => {
+  function openContactModal(e) {
+    e.preventDefault();
     contactModal.style.display = 'flex';
-  });
+  }
+
+  if (contactBtn) contactBtn.addEventListener('click', openContactModal);
+  if (contactBtnFooter) contactBtnFooter.addEventListener('click', openContactModal);
 
   closeContact.addEventListener('click', () => {
     contactModal.style.display = 'none';
@@ -159,7 +164,7 @@
 
   contactForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    alert('Your message has been sent! We will get back to you soon.');
+    alert('Your message has been sent!');
     contactForm.reset();
     contactModal.style.display = 'none';
   });
