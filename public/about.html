@@ -11,22 +11,26 @@
     <header>
         <nav class="navbar">
             <div class="nav-left">
+                <p id="comp-name"><a href="../index.html">TourGuide</a></p>
+            </div>
+
+            <div class="nav-center">
+                <input type="text" id="destination-search" placeholder="Destination?">
+            </div>
+
+            <div class="nav-right">
                 <a href="../index.html">Explore</a>
                 <a href="#">Rating</a>
                 <a href="about.html">About</a>
-            </div>
-    
-            <input type="text" id="destination-search" placeholder="Destination?">
-    
-            <div class="nav-right">
-                <a id="Contact" href="#">Contact</a>
-                <div id="cart-icon">
-                    🛒 <span id="cart-count">0</span>
+                <a id="contact-btn" href="#">Contact</a>
+            <div id="cart-icon">
+                🛒 <span id="cart-count">0</span>
                 </div>
             </div>
-    
-            <div class="menu-toggle" id="menu-toggle">☰</div>
-        </nav>
+
+  <div class="menu-toggle" id="menu-toggle">☰</div>
+</nav>
+
     </header>
 
     <main>
@@ -116,6 +120,8 @@
     </form>
   </div>
 </div>
+
+    <script src="script.js"></script>
 
 <script>
   const contactBtn = document.getElementById('Contact');
