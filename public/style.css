@@ -369,6 +369,34 @@ input::placeholder {
 /* ----- MOBILE VIEW ----- */
 
 @media (max-width: 768px) {
+  .menu-toggle {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    z-index: 1001;
+    transition: top 0.3s ease;
+    font-size: 28px;
+    cursor: pointer;
+    display: block;
+  }
+
+  .menu-toggle.active {
+    transform: rotate(90deg);
+  }
+
+  a#Contact {
+    margin-left: 0;
+    align-self: center;
+  }
+
+  .nav-center {
+    position: static;
+    transform: none;
+    width: 100%;
+    text-align: center;
+    margin: 10px 0;
+  }
+
   .nav-left,
   .nav-right {
     flex-direction: column;
@@ -379,30 +407,24 @@ input::placeholder {
     border-radius: 10px;
     margin-top: 10px;
     padding: 10px 0;
+    animation: slideDown 0.3s ease;
   }
+
   .nav-left.show,
   .nav-right.show {
     display: flex;
   }
-  .menu-toggle {
-    display: block;
-  }
-  #destination-search {
-    width: 80%;
-    margin: 10px auto;
-  }
-  #cart-icon {
-    font-size: 24px;
-    margin-top: 10px;
-  }
-  .nav-center {
-    position: static;
-    transform: none;
-    margin-top: 10px;
-    width: 100%; 
-    text-align: center;
-  }
 }
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 
 /* --- STYLES FOR ABOUT.HTML PAGE --- */
 
