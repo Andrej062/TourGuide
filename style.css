@@ -287,16 +287,6 @@ input::placeholder {
   list-style: none;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
-#ask-btn {
-  background-color: rgba(54, 122, 240, 0.9);
-  border: none;
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: 0.2s;
-  font-weight: bold;
-}
 #ask-btn:hover {
   background-color: #367af0;
   transform: scale(1.05);
@@ -392,6 +382,26 @@ input::placeholder {
 }
 
 /* ----- MOBILE VIEW ----- */
+
+@media (max-width: 480px) {
+  .cart-content {
+    width: 90%;
+    margin: 20% auto 0 auto;
+    max-height: 70vh;
+    overflow-y: auto;
+    padding: 1.2rem;
+    border-radius: 15px;
+  }
+
+  #cart-items {
+    max-height: 45vh;
+  }
+
+  #checkout-btn {
+    width: 100%;
+  }
+}
+
 
 @media (max-width: 768px) {
   .menu-toggle {
