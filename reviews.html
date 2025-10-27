@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reviews — TourGuide</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .container{max-width:1000px;margin:0 auto;padding:16px}
+    .toolbar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:12px 0}
+    .toolbar input,.toolbar select{padding:8px;border:1px solid #ddd;border-radius:8px}
+    .review-card{background:#fff;border:1px solid #eee;border-radius:16px;padding:16px;margin:12px 0}
+    .tour-header{display:flex;justify-content:space-between;align-items:center;gap:10px}
+    .stars{font-size:1rem}
+    .muted{opacity:.7}
+    .comment{border-top:1px dashed #eee;padding-top:8px;margin-top:8px}
+  </style>
+</head>
+<body>
+<header>
+  <nav class="navbar">
+    <div class="nav-left">
+      <p id="comp-name"><a href="index.html">TourGuide</a></p>
+    </div>
+    <div class="nav-center">
+      <input type="text" id="destination-search" placeholder="Destination?" />
+    </div>
+    <div class="nav-right">
+      <a href="index.html">Explore</a>
+      <a href="reviews.html" class="active">Rating</a>
+      <a href="about.html">About</a>
+      <a id="Contact" href="index.html?review=ulriken">Contact</a>
+      <div id="cart-icon">🛒 <span id="cart-count">0</span></div>
+    </div>
+    <div class="menu-toggle" id="menu-toggle">☰</div>
+  </nav>
+</header>
+
+<main class="container">
+  <h1>All Reviews</h1>
+  <p class="muted">Browse ratings and comments from all tours. To leave a new review, open a tour on the main page and click <em>Rate & comments</em>.</p>
+
+  <div class="toolbar">
+    <label>
+      Tour:
+      <select id="filter-tour">
+        <option value="all">All tours</option>
+        <option value="ulriken">Ulriken Tour</option>
+        <option value="floyen">Fløyen Tour</option>
+        <option value="nordnes">Nordnes Park Tour</option>
+        <option value="citycenter">Bergen City Center Tour</option>
+        <option value="bryggen">Bryggen and Fish Market Tour</option>
+        <option value="aquarium">Bergen Aquarium Tour</option>
+      </select>
+    </label>
+    <label>
+      Sort by:
+      <select id="sort-by">
+        <option value="newest">Newest</option>
+        <option value="oldest">Oldest</option>
+        <option value="rating_desc">Highest rating</option>
+        <option value="rating_asc">Lowest rating</option>
+      </select>
+    </label>
+    <input id="search" type="text" placeholder="Search comments..." />
+  </div>
+
+  <div id="reviews-list"></div>
+</main>
+
+<script>
+  const TOURS = {
+    ulriken: 'Ulriken Tour',
+    floyen: 'Fløyen Tour',
+    nordnes: 'Nordnes Park Tour',
+    citycenter: 'Bergen City Center Tour',
+    bryggen: 'Bryggen and Fish Market Tour',
+    aquarium: 'Bergen Aquarium Tour'
+  };
+
+  const filterTour = document.getElementById('filter-tour');
+  const sortBy = document.getElementById('sort-by');
+  const search = document.getElementById('search');
+  const list = document.getElementById('reviews-list');
+
+  function storageKey(tour){return `feedback_${tour}`}
+  function getFeedback(t){
+    try { return JSON.parse(localStorage.getItem(storageKey(t)))||{ratings:[],comments:[]} } catch { return {ratings:[],comments:[]} }
+  }
+  function avg(arr){ return arr.length ? (arr.reduce((a,b)=>a+b,0)/arr.length) : 0 }
+  function fmtDate(ts){ const d=new Date(ts); return d.toLocaleString() }
+  function starStr(n){ n=Math.max(1,Math.min(5,n||5)); return '★'.repeat(n)+'☆'.repeat(5-n) }
+
+  function computeData(){
+    const items = [];
+    for (const key of Object.keys(TOURS)){
+      const data = getFeedback(key);
+      items.push({key,title:TOURS[key],avg:avg(data.ratings),count:(data.ratings||[]).length,comments:data.comments||[]});
+    }
+    return items;
+  }
+
+  function render(){
+    const q = (search.value||'').toLowerCase();
+    const tour = filterTour.value;
+    const data = computeData();
+    list.innerHTML='';
+
+    for (const item of data){
+      if (tour!=='all' && item.key!==tour) continue;
+
+      let comments = [...item.comments];
+      if (q) comments = comments.filter(c => (c.text||'').toLowerCase().includes(q) || (c.name||'').toLowerCase().includes(q));
+
+      comments.sort((a,b)=>{
+        switch (sortBy.value){
+          case 'oldest': return (a.ts||0)-(b.ts||0);
+          case 'rating_desc': return (b.stars||0)-(a.stars||0) || (b.ts||0)-(a.ts||0);
+          case 'rating_asc': return (a.stars||0)-(b.stars||0) || (b.ts||0)-(a.ts||0);
+          default: return (b.ts||0)-(a.ts||0);
+        }
+      });
+
+      const card = document.createElement('div');
+      card.className='review-card';
+      card.innerHTML = `
+        <div class="tour-header">
+          <h2>${item.title}</h2>
+          <div class="stars"><strong>${item.count ? item.avg.toFixed(1) : '–'}</strong> ★ <span class="muted">(${item.count})</span></div>
+        </div>
+        <div class="muted">${item.count? '' : 'No ratings yet.'}</div>
+      `;
+
+      if (!comments.length){
+        const empty = document.createElement('div');
+        empty.className='comment muted';
+        empty.textContent='No comments yet.';
+        card.appendChild(empty);
+      } else {
+        for (const c of comments){
+          const who = (c.name&&c.name.trim())? c.name.trim() : 'Anonymous';
+          const row = document.createElement('div');
+          row.className='comment';
+          row.innerHTML = `<div><strong>${who}</strong> — ${starStr(c.stars)} <span class="muted">${fmtDate(c.ts)}</span></div><div>${escapeHtml(c.text||'')}</div>`;
+          card.appendChild(row);
+        }
+      }
+
+      list.appendChild(card);
+    }
+  }
+
+  function escapeHtml(str){return str.replace(/[&<>"]/g, s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]))}
+
+  filterTour.addEventListener('change', render);
+  sortBy.addEventListener('change', render);
+  search.addEventListener('input', render);
+  render();
+</script>
+</body>
+</html>

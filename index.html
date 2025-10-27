@@ -20,7 +20,7 @@
 
     <div class="nav-right">
       <a href="index.html">Explore</a>
-      <a href="#">Rating</a>
+      <a href="reviews.html">Rating</a>
       <a href="about.html">About</a>
       <a id="Contact" href="#">Contact</a>
       <div id="cart-icon">🛒 <span id="cart-count">0</span></div>
@@ -55,6 +55,7 @@
           <button class="button feedback-btn" data-tour="ulriken" data-tour-title="Ulriken Tour">Rate & comments</button>
         </div>
       </div>
+
     <div class="gallery-item">
         <img src="pics/fløyen.jpg" alt="Bergen fløyen">
           <div class="tour-info">
@@ -68,6 +69,7 @@
             <button class="button feedback-btn" data-tour="floyen" data-tour-title="Fløyen Tour">Rate & comments</button>
           </div>
     </div>
+
       <div class="gallery-item">
         <img src="pics/nordnesparken.jpg" alt="Bergen park">
       <div class="tour-info">
@@ -81,6 +83,7 @@
         <button class="button feedback-btn" data-tour="nordnes" data-tour-title="Nordnes Park Tour">Rate & comments</button>
       </div>
     </div>
+
       <div class="gallery-item">
         <img src="pics/sentrum.jpg" alt="Bergen city senter">
       <div class="tour-info">
@@ -94,6 +97,7 @@
         <button class="button feedback-btn" data-tour="citycenter" data-tour-title="Bergen City Center Tour">Rate & comments</button>
       </div>
     </div>
+
       <div class="gallery-item">
         <img src="pics/bryggen.jpg" alt="Bergen fish market">
       <div class="tour-info">
@@ -107,6 +111,7 @@
         <button class="button feedback-btn" data-tour="bryggen" data-tour-title="Bryggen and Fish Market Tour">Rate & comments</button>
       </div>
     </div>
+
       <div class="gallery-item">
         <img src="pics/bergen.jpg" alt="Bergen aquarium">
       <div class="tour-info">
@@ -145,27 +150,6 @@
   </div>
 
   <script src="script.js"></script>
-
-  <div id="feedback-modal" class="modal">
-    <div class="modal-content">
-      <span id="close-feedback" class="close">&times;</span>
-      <h2 id="feedback-title">Rate & Comment</h2>
-
-      <div id="star-picker" class="stars" style="font-size: 1.4rem; line-height: 1; margin-bottom: 10px;">
-        <!-- stars will be injected by JS -->
-      </div>
-
-      <form id="feedback-form">
-        <input type="text" id="fb-name" placeholder="Your name (optional)">
-        <textarea id="fb-text" placeholder="Write a comment..." required></textarea>
-        <button type="submit" class="button">Submit</button>
-      </form>
-
-      <hr>
-      <h3 style="margin-top: 10px;">Recent comments</h3>
-      <ul id="comments-list"></ul>
-    </div>
-  </div>
   
 <div id="contact-modal" class="modal">
   <div class="modal-content">
@@ -214,6 +198,28 @@
       <p><strong>Phone:</strong> +47 987 654 321</p>
       <p><strong>Office address:</strong> Bergen, Bryggen 12</p>
 
+  </div>
+</div>
+
+<!-- Feedback modal -->
+<div id="feedback-modal" class="modal">
+  <div class="modal-content">
+    <span id="close-feedback" class="close">&times;</span>
+    <h2 id="feedback-title">Rate & Comment</h2>
+
+    <div id="star-picker" class="stars" style="font-size: 1.4rem; line-height: 1; margin-bottom: 10px;">
+      <!-- stars will be injected by JS -->
+    </div>
+
+    <form id="feedback-form">
+      <input type="text" id="fb-name" placeholder="Your name (optional)">
+      <textarea id="fb-text" placeholder="Write a comment..." required></textarea>
+      <button type="submit" class="button">Submit</button>
+    </form>
+
+    <hr>
+    <h3 style="margin-top: 10px;">Recent comments</h3>
+    <ul id="comments-list"></ul>
   </div>
 </div>
 
@@ -329,12 +335,10 @@ function renderComments(tour) {
     commentsList.appendChild(li);
     return;
   }
-  // newest first
   const items = [...data.comments].sort((a,b)=>b.ts - a.ts);
-  for (const c of items.slice(0, 25)) { // keep UI light
+  for (const c of items.slice(0, 25)) {
     const li = document.createElement('li');
     const who = c.name && c.name.trim() ? c.name.trim() : 'Anonymous';
-    const d = new Date(c.ts);
     li.innerHTML = `<strong>${who}</strong> — ${'★'.repeat(c.stars)}${'☆'.repeat(5-c.stars)}<br>${escapeHtml(c.text)}`;
     li.style.marginBottom = '8px';
     commentsList.appendChild(li);
@@ -383,7 +387,6 @@ feedbackForm.addEventListener('submit', (e) => {
   data.comments.push({ name, text, stars, ts: Date.now() });
   saveFeedback(currentTourKey, data);
 
-  // refresh UI
   updateSummary(currentTourKey);
   renderComments(currentTourKey);
   fbText.value = '';
@@ -393,7 +396,15 @@ feedbackForm.addEventListener('submit', (e) => {
 
 // Initialize summaries on load
 ['ulriken','floyen','nordnes','citycenter','bryggen','aquarium'].forEach(updateSummary);
-// ===========================================================================
+
+// Авто-открытие формы по ?review=<tour> (например index.html?review=floyen)
+(function(){
+  const p = new URLSearchParams(location.search);
+  const t = p.get('review');
+  if (!t) return;
+  const btn = document.querySelector(`.feedback-btn[data-tour="${t}"]`);
+  if (btn) btn.click();
+})();
 </script>
 
 </body>
