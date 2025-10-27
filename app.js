@@ -5,6 +5,9 @@ const Database = require('better-sqlite3');
 const app = express();
 app.use(express.json());
 
+const cors = require('cors');
+app.use(cors());
+
 const dbPath = path.join(__dirname, 'tourGuide.db');
 let db;
 
