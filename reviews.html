@@ -29,7 +29,7 @@
       <a href="index.html">Explore</a>
       <a href="reviews.html" class="active">Rating</a>
       <a href="about.html">About</a>
-      <a id="Contact" href="index.html?review=ulriken">Contact</a>
+      <a id="Contact" href="#">Contact</a>
       <div id="cart-icon">🛒 <span id="cart-count">0</span></div>
     </div>
     <div class="menu-toggle" id="menu-toggle">☰</div>
@@ -68,7 +68,56 @@
   <div id="reviews-list"></div>
 </main>
 
+  <div id="contact-modal" class="modal">
+  <div class="modal-content">
+    <span id="close-contact" class="close">&times;</span>
+    <h2>Contact Us</h2>
+    <p><strong>Email:</strong> tourguide@company.com</p>
+    <p><strong>Phone:</strong> +47 123 456 789</p>
+    <hr>
+    <h3>Leave a Request</h3>
+    <form id="contact-form">
+      <input type="text" id="name" placeholder="Your Name" required>
+      <input type="email" id="email" placeholder="Your Email" required>
+      <textarea id="message" placeholder="Your Message" required></textarea>
+      <button type="submit">Send</button>
+    </form>
+  </div>
+</div>
+
+<script src="script.js"></script>
+
 <script>
+
+  const contactBtn = document.getElementById('Contact');
+  const contactBtnFooter = document.getElementById('ContactFooter');
+  const contactModal = document.getElementById('contact-modal');
+  const closeContact = document.getElementById('close-contact');
+  const contactForm = document.getElementById('contact-form');
+
+  function openContactModal(e) {
+    e.preventDefault();
+    contactModal.style.display = 'flex';
+  }
+
+  if (contactBtn) contactBtn.addEventListener('click', openContactModal);
+  if (contactBtnFooter) contactBtnFooter.addEventListener('click', openContactModal);
+
+  closeContact.addEventListener('click', () => {
+    contactModal.style.display = 'none';
+  });
+
+  window.addEventListener('click', (e) => {
+    if (e.target === contactModal) contactModal.style.display = 'none';
+  });
+
+  contactForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    alert('Your message has been sent!');
+    contactForm.reset();
+    contactModal.style.display = 'none';
+  });
+
 const TOURS = {
   ulriken: 'Ulriken Tour',
   floyen: 'Fløyen Tour',
