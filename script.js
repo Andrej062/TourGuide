@@ -23,7 +23,7 @@ window.addEventListener('click', (e) => {
   if (e.target === cartModal) cartModal.style.display = 'none';
 });
 
-document.querySelectorAll('.button').forEach((btn) => {
+document.querySelectorAll('.button:not(.feedback-btn)').forEach((btn) => {
   btn.addEventListener('click', (e) => {
     const tourInfo = e.target.closest('.tour-info');
     const name = tourInfo.querySelector('h3').textContent;

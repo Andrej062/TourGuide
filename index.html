@@ -401,6 +401,22 @@ feedbackForm.addEventListener('submit', (e) => {
   const btn = document.querySelector(`.feedback-btn[data-tour="${t}"]`);
   if (btn) btn.click();
 })();
+
+// API: load reviews from server
+async function apiGetReviews(tour) {
+  const res = await fetch(`/api/reviews/${tour}`);
+  return res.json();
+}
+
+// API: add review to server
+async function apiPostReview(tour_key, name, comment, stars) {
+  await fetch('/api/reviews', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ tour_key, user_name: name, comment, stars })
+  });
+}
+
 </script>
 
 </body>

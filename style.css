@@ -57,20 +57,22 @@ input:hover{
     border: 1px solid rgba(54, 122, 240, 0.5);
     transform: scale(1.05);
 }
-.button{
-    width: 90px;
-    height: 30px;
-    background-color: rgb(54, 122, 240, 59%);
+.button {
+    background-color: rgba(54, 122, 240, 0.8);
     border-radius: 25px;
-    margin: auto;
-    display: block;
     border: none;
     cursor: pointer;
     transition: ease-in-out 0.2s;
-    font-size: 20px;
-    font-weight: 500;
+    font-size: 18px;
+    font-weight: 600;
     color: white;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 25px;
+    width: auto;
 }
+
 .button:hover{
     background-color: rgb(54, 122, 240, 0.8);
     transform: scale(1.1);
@@ -643,4 +645,47 @@ input::placeholder {
     .team-member {
         flex: 0 0 100%;
     }
+}
+
+#feedback-modal .modal-content {
+    text-align: center;
+}
+
+#star-picker span {
+    font-size: 2rem;
+    margin: 0 3px;
+}
+
+#comments-list {
+    list-style: none;
+    padding: 0;
+    text-align: left;
+}
+
+#comments-list li {
+    background: #f5f9ff;
+    padding: 10px;
+    border-radius: 12px;
+    margin: 10px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    font-size: 14px;
+}
+
+.rating-summary {
+    margin: 6px 0;
+    font-size: 14px;
+    display: block;
+}
+#feedback-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+#feedback-form textarea {
+    width: 90%;
+    max-width: 350px;
+    height: 80px;
+    resize: none;
 }
