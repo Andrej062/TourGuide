@@ -49,6 +49,10 @@
           <p>Climb the highest mountain in Bergen<br>
               and enjoy breathtaking views.</p>
           <button class="button">Order</button>
+          <div class="rating-summary">
+            <small>Rating: <span class="avg" data-tour="ulriken">–</span> ★ (<span class="count" data-tour="ulriken">0</span>)</small>
+          </div>
+          <button class="button feedback-btn" data-tour="ulriken" data-tour-title="Ulriken Tour">Rate & comments</button>
         </div>
       </div>
     <div class="gallery-item">
@@ -58,6 +62,10 @@
             <p>Take the funicular to Mount Fløyen<br>
             and explore scenic hiking trails.</p>
             <button class="button">Order</button>
+            <div class="rating-summary">
+              <small>Rating: <span class="avg" data-tour="floyen">–</span> ★ (<span class="count" data-tour="floyen">0</span>)</small>
+            </div>
+            <button class="button feedback-btn" data-tour="floyen" data-tour-title="Fløyen Tour">Rate & comments</button>
           </div>
     </div>
       <div class="gallery-item">
@@ -67,6 +75,10 @@
         <p>Discover the beauty of Nordnes Park<br>
           with its gardens and waterfront views.</p>
         <button class="button">Order</button>
+        <div class="rating-summary">
+          <small>Rating: <span class="avg" data-tour="nordnes">–</span> ★ (<span class="count" data-tour="nordnes">0</span>)</small>
+        </div>
+        <button class="button feedback-btn" data-tour="nordnes" data-tour-title="Nordnes Park Tour">Rate & comments</button>
       </div>
     </div>
       <div class="gallery-item">
@@ -76,6 +88,10 @@
         <p>Explore the historic city center<br>
           with its charming streets and shops.</p>
         <button class="button">Order</button>
+        <div class="rating-summary">
+          <small>Rating: <span class="avg" data-tour="citycenter">–</span> ★ (<span class="count" data-tour="citycenter">0</span>)</small>
+        </div>
+        <button class="button feedback-btn" data-tour="citycenter" data-tour-title="Bergen City Center Tour">Rate & comments</button>
       </div>
     </div>
       <div class="gallery-item">
@@ -85,6 +101,10 @@
         <p>Visit the iconic Bryggen wharf<br>
           and experience the vibrant fish market.</p>
         <button class="button">Order</button>
+        <div class="rating-summary">
+          <small>Rating: <span class="avg" data-tour="bryggen">–</span> ★ (<span class="count" data-tour="bryggen">0</span>)</small>
+        </div>
+        <button class="button feedback-btn" data-tour="bryggen" data-tour-title="Bryggen and Fish Market Tour">Rate & comments</button>
       </div>
     </div>
       <div class="gallery-item">
@@ -94,6 +114,10 @@
         <p>Explore the fascinating marine life<br>
           at the Bergen Aquarium.</p>
         <button class="button">Order</button>
+        <div class="rating-summary">
+          <small>Rating: <span class="avg" data-tour="aquarium">–</span> ★ (<span class="count" data-tour="aquarium">0</span>)</small>
+        </div>
+        <button class="button feedback-btn" data-tour="aquarium" data-tour-title="Bergen Aquarium Tour">Rate & comments</button>
       </div>
     </div>
   </section>
@@ -121,6 +145,27 @@
   </div>
 
   <script src="script.js"></script>
+
+  <div id="feedback-modal" class="modal">
+    <div class="modal-content">
+      <span id="close-feedback" class="close">&times;</span>
+      <h2 id="feedback-title">Rate & Comment</h2>
+
+      <div id="star-picker" class="stars" style="font-size: 1.4rem; line-height: 1; margin-bottom: 10px;">
+        <!-- stars will be injected by JS -->
+      </div>
+
+      <form id="feedback-form">
+        <input type="text" id="fb-name" placeholder="Your name (optional)">
+        <textarea id="fb-text" placeholder="Write a comment..." required></textarea>
+        <button type="submit" class="button">Submit</button>
+      </form>
+
+      <hr>
+      <h3 style="margin-top: 10px;">Recent comments</h3>
+      <ul id="comments-list"></ul>
+    </div>
+  </div>
   
 <div id="contact-modal" class="modal">
   <div class="modal-content">
@@ -219,6 +264,136 @@ window.addEventListener('click', (e) => {
   if (e.target === applyModal) applyModal.style.display = 'none';
 });
 
+// ===================== Ratings & Comments (LocalStorage) =====================
+const feedbackModal = document.getElementById('feedback-modal');
+const closeFeedback = document.getElementById('close-feedback');
+const feedbackTitle = document.getElementById('feedback-title');
+const starPicker = document.getElementById('star-picker');
+const feedbackForm = document.getElementById('feedback-form');
+const fbName = document.getElementById('fb-name');
+const fbText = document.getElementById('fb-text');
+const commentsList = document.getElementById('comments-list');
+
+let currentTourKey = null; // e.g. 'ulriken'
+
+// Create clickable 5-star UI
+let currentStars = 0;
+function renderStars(selected) {
+  starPicker.innerHTML = '';
+  for (let i = 1; i <= 5; i++) {
+    const s = document.createElement('span');
+    s.textContent = i <= selected ? '★' : '☆';
+    s.style.cursor = 'pointer';
+    s.dataset.value = i;
+    s.addEventListener('mouseenter', () => renderStars(i));
+    s.addEventListener('click', () => { currentStars = i; renderStars(i); });
+    starPicker.appendChild(s);
+    if (i < 5) starPicker.appendChild(document.createTextNode(' '));
+  }
+}
+renderStars(0);
+
+function storageKey(tour) { return `feedback_${tour}`; }
+
+function getFeedback(tour) {
+  try {
+    return JSON.parse(localStorage.getItem(storageKey(tour))) || { ratings: [], comments: [] };
+  } catch { return { ratings: [], comments: [] }; }
+}
+
+function saveFeedback(tour, data) {
+  localStorage.setItem(storageKey(tour), JSON.stringify(data));
+}
+
+function updateSummary(tour) {
+  const data = getFeedback(tour);
+  const avgEl = document.querySelector(`.avg[data-tour="${tour}"]`);
+  const cntEl = document.querySelector(`.count[data-tour="${tour}"]`);
+  if (cntEl) cntEl.textContent = data.ratings.length;
+  if (avgEl) {
+    if (data.ratings.length) {
+      const avg = (data.ratings.reduce((a,b)=>a+b,0) / data.ratings.length).toFixed(1);
+      avgEl.textContent = avg;
+    } else {
+      avgEl.textContent = '–';
+    }
+  }
+}
+
+function renderComments(tour) {
+  const data = getFeedback(tour);
+  commentsList.innerHTML = '';
+  if (!data.comments.length) {
+    const li = document.createElement('li');
+    li.textContent = 'No comments yet — be the first!';
+    commentsList.appendChild(li);
+    return;
+  }
+  // newest first
+  const items = [...data.comments].sort((a,b)=>b.ts - a.ts);
+  for (const c of items.slice(0, 25)) { // keep UI light
+    const li = document.createElement('li');
+    const who = c.name && c.name.trim() ? c.name.trim() : 'Anonymous';
+    const d = new Date(c.ts);
+    li.innerHTML = `<strong>${who}</strong> — ${'★'.repeat(c.stars)}${'☆'.repeat(5-c.stars)}<br>${escapeHtml(c.text)}`;
+    li.style.marginBottom = '8px';
+    commentsList.appendChild(li);
+  }
+}
+
+function escapeHtml(str) {
+  return str.replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]));
+}
+
+// Open modal from any "Rate & comments" button
+document.querySelectorAll('.feedback-btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    const tour = btn.dataset.tour;
+    const title = btn.dataset.tourTitle || 'Rate & Comment';
+    currentTourKey = tour;
+    feedbackTitle.textContent = title;
+    currentStars = 0; renderStars(0);
+    fbName.value = '';
+    fbText.value = '';
+    renderComments(tour);
+    feedbackModal.style.display = 'flex';
+  });
+});
+
+closeFeedback.addEventListener('click', () => {
+  feedbackModal.style.display = 'none';
+});
+
+window.addEventListener('click', (e) => {
+  if (e.target === feedbackModal) feedbackModal.style.display = 'none';
+});
+
+// Submit feedback
+feedbackForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  if (!currentTourKey) return;
+  const text = fbText.value.trim();
+  const name = fbName.value.trim();
+  const stars = Math.max(1, Math.min(5, currentStars || 5));
+  if (!text) return;
+
+  const data = getFeedback(currentTourKey);
+  data.ratings.push(stars);
+  data.comments.push({ name, text, stars, ts: Date.now() });
+  saveFeedback(currentTourKey, data);
+
+  // refresh UI
+  updateSummary(currentTourKey);
+  renderComments(currentTourKey);
+  fbText.value = '';
+  currentStars = 0; renderStars(0);
+  alert('Thanks for your feedback!');
+});
+
+// Initialize summaries on load
+['ulriken','floyen','nordnes','citycenter','bryggen','aquarium'].forEach(updateSummary);
+// ===========================================================================
 </script>
 
 </body>
