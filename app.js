@@ -79,6 +79,22 @@ app.post('/api/reviews', (req, res) => {
     }
 });
 
+app.delete('/api/reviews/:id', (req, res) => {
+  const id = req.params.id;
+  try {
+    const stmt = db.prepare('DELETE FROM reviews WHERE id = ?');
+    const info = stmt.run(id);
+
+    if (info.changes === 0) {
+      return res.status(404).json({ error: "Review not found" });
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "DB Error" });
+  }
+});
 
 app.use(express.static(__dirname));
 

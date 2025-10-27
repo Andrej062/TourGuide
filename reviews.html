@@ -69,109 +69,119 @@
 </main>
 
 <script>
-  const TOURS = {
-    ulriken: 'Ulriken Tour',
-    floyen: 'Fløyen Tour',
-    nordnes: 'Nordnes Park Tour',
-    citycenter: 'Bergen City Center Tour',
-    bryggen: 'Bryggen and Fish Market Tour',
-    aquarium: 'Bergen Aquarium Tour'
-  };
+const TOURS = {
+  ulriken: 'Ulriken Tour',
+  floyen: 'Fløyen Tour',
+  nordnes: 'Nordnes Park Tour',
+  citycenter: 'Bergen City Center Tour',
+  bryggen: 'Bryggen and Fish Market Tour',
+  aquarium: 'Bergen Aquarium Tour'
+};
 
-  const filterTour = document.getElementById('filter-tour');
-  const sortBy = document.getElementById('sort-by');
-  const search = document.getElementById('search');
-  const list = document.getElementById('reviews-list');
+const filterTour = document.getElementById('filter-tour');
+const sortBy = document.getElementById('sort-by');
+const search = document.getElementById('search');
+const list = document.getElementById('reviews-list');
 
-  function storageKey(tour){return `feedback_${tour}`}
-  function getFeedback(t){
-    try { return JSON.parse(localStorage.getItem(storageKey(t)))||{ratings:[],comments:[]} } catch { return {ratings:[],comments:[]} }
-  }
-  function avg(arr){ return arr.length ? (arr.reduce((a,b)=>a+b,0)/arr.length) : 0 }
-  function fmtDate(ts){ const d=new Date(ts); return d.toLocaleString() }
-  function starStr(n){ n=Math.max(1,Math.min(5,n||5)); return '★'.repeat(n)+'☆'.repeat(5-n) }
-
-  function computeData(){
-    const items = [];
-    for (const key of Object.keys(TOURS)){
-      const data = getFeedback(key);
-      items.push({key,title:TOURS[key],avg:avg(data.ratings),count:(data.ratings||[]).length,comments:data.comments||[]});
-    }
-    return items;
-  }
-
-  function render(){
-    const q = (search.value||'').toLowerCase();
-    const tour = filterTour.value;
-    const data = computeData();
-    list.innerHTML='';
-
-    for (const item of data){
-      if (tour!=='all' && item.key!==tour) continue;
-
-      let comments = [...item.comments];
-      if (q) comments = comments.filter(c => (c.text||'').toLowerCase().includes(q) || (c.name||'').toLowerCase().includes(q));
-
-      comments.sort((a,b)=>{
-        switch (sortBy.value){
-          case 'oldest': return (a.ts||0)-(b.ts||0);
-          case 'rating_desc': return (b.stars||0)-(a.stars||0) || (b.ts||0)-(a.ts||0);
-          case 'rating_asc': return (a.stars||0)-(b.stars||0) || (b.ts||0)-(a.ts||0);
-          default: return (b.ts||0)-(a.ts||0);
-        }
-      });
-
-      const card = document.createElement('div');
-      card.className='review-card';
-      card.innerHTML = `
-        <div class="tour-header">
-          <h2>${item.title}</h2>
-          <div class="stars"><strong>${item.count ? item.avg.toFixed(1) : '–'}</strong> ★ <span class="muted">(${item.count})</span></div>
-        </div>
-        <div class="muted">${item.count? '' : 'No ratings yet.'}</div>
-      `;
-
-      if (!comments.length){
-        const empty = document.createElement('div');
-        empty.className='comment muted';
-        empty.textContent='No comments yet.';
-        card.appendChild(empty);
-      } else {
-        for (const c of comments){
-          const who = (c.name&&c.name.trim())? c.name.trim() : 'Anonymous';
-          const row = document.createElement('div');
-          row.className='comment';
-          row.innerHTML = `<div><strong>${who}</strong> — ${starStr(c.stars)} <span class="muted">${fmtDate(c.ts)}</span></div><div>${escapeHtml(c.text||'')}</div>`;
-          card.appendChild(row);
-        }
-      }
-
-      list.appendChild(card);
-    }
-  }
-
-  function escapeHtml(str){return str.replace(/[&<>"]/g, s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]))}
-
-  filterTour.addEventListener('change', render);
-  sortBy.addEventListener('change', render);
-  search.addEventListener('input', render);
-  render();
-
-  // API: load reviews from server
+// API: load reviews for one tour
 async function apiGetReviews(tour) {
   const res = await fetch(`/api/reviews/${tour}`);
   return res.json();
 }
 
-// API: add review to server
-async function apiPostReview(tour_key, name, comment, stars) {
-  await fetch('/api/reviews', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ tour_key, user_name: name, comment, stars })
-  });
+// Load and combine all reviews
+async function loadAllReviews() {
+  const all = [];
+  for (const key of Object.keys(TOURS)) {
+    const items = await apiGetReviews(key);
+    for (const r of items) {
+      all.push({ ...r, title: TOURS[key] });
+    }
+  }
+  return all;
 }
 
+// Escape HTML text to avoid injection
+function escapeHtml(str) {
+  return (str || '').replace(/[&<>"]/g, s => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'
+  }[s]));
+}
+
+let cachedReviews = [];
+
+// Render all filtered and sorted reviews
+function renderReviews() {
+  const tourFilter = filterTour.value;
+  const q = (search.value || '').toLowerCase();
+  const sort = sortBy.value;
+
+  let rows = [...cachedReviews];
+
+  // Filter by tour
+  if (tourFilter !== 'all') {
+    rows = rows.filter(r => r.tour_key === tourFilter);
+  }
+
+  // Text search
+  if (q) {
+    rows = rows.filter(r =>
+      (r.comment || '').toLowerCase().includes(q) ||
+      (r.user_name || '').toLowerCase().includes(q)
+    );
+  }
+
+  // Sorting
+  rows.sort((a, b) => {
+    switch (sort) {
+      case 'oldest':
+        return new Date(a.created_at) - new Date(b.created_at);
+      case 'rating_desc':
+        return b.stars - a.stars || new Date(b.created_at) - new Date(a.created_at);
+      case 'rating_asc':
+        return a.stars - b.stars || new Date(b.created_at) - new Date(a.created_at);
+      default:
+        return new Date(b.created_at) - new Date(a.created_at);
+    }
+  });
+
+  // Render
+  list.innerHTML = '';
+
+  if (!rows.length) {
+    list.innerHTML = '<p class="muted">No reviews found.</p>';
+    return;
+  }
+
+  for (const r of rows) {
+    const who = r.user_name?.trim() || 'Anonymous';
+    const div = document.createElement('div');
+    div.className = 'review-card';
+    div.innerHTML = `
+      <div class="tour-header">
+        <h2>${r.title}</h2>
+        <div class="stars"><strong>${r.stars}</strong> ★</div>
+      </div>
+      <div class="comment">
+        <strong>${who}</strong> — ${new Date(r.created_at).toLocaleString()}
+        <br>${escapeHtml(r.comment)}
+      </div>
+    `;
+    list.appendChild(div);
+  }
+}
+
+// Events
+filterTour.addEventListener('change', renderReviews);
+sortBy.addEventListener('change', renderReviews);
+search.addEventListener('input', renderReviews);
+
+// Init
+(async () => {
+  cachedReviews = await loadAllReviews();
+  renderReviews();
+})();
 </script>
+
 </body>
 </html>

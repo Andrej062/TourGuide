@@ -272,13 +272,13 @@ window.addEventListener('click', (e) => {
 
                  // FEEDBACK
 const feedbackModal = document.getElementById('feedback-modal');
-const closeFeedback = document.getElementById('close-feedback');
-const feedbackTitle = document.getElementById('feedback-title');
-const starPicker = document.getElementById('star-picker');
-const feedbackForm = document.getElementById('feedback-form');
-const fbName = document.getElementById('fb-name');
-const fbText = document.getElementById('fb-text');
-const commentsList = document.getElementById('comments-list');
+const closeFeedback  = document.getElementById('close-feedback');
+const feedbackTitle  = document.getElementById('feedback-title');
+const starPicker     = document.getElementById('star-picker');
+const feedbackForm   = document.getElementById('feedback-form');
+const fbName         = document.getElementById('fb-name');
+const fbText         = document.getElementById('fb-text');
+const commentsList   = document.getElementById('comments-list');
 
 let currentTourKey = null;
 
@@ -291,68 +291,79 @@ function renderStars(selected) {
     s.style.cursor = 'pointer';
     s.dataset.value = i;
     s.addEventListener('mouseenter', () => renderStars(i));
-    s.addEventListener('click', () => { currentStars = i; renderStars(i); });
+    s.addEventListener('click',      () => { currentStars = i; renderStars(i); });
     starPicker.appendChild(s);
     if (i < 5) starPicker.appendChild(document.createTextNode(' '));
   }
 }
 renderStars(0);
 
-function storageKey(tour) { return `feedback_${tour}`; }
-
-function getFeedback(tour) {
-  try {
-    return JSON.parse(localStorage.getItem(storageKey(tour))) || { ratings: [], comments: [] };
-  } catch { return { ratings: [], comments: [] }; }
-}
-
-function saveFeedback(tour, data) {
-  localStorage.setItem(storageKey(tour), JSON.stringify(data));
-}
-
-function updateSummary(tour) {
-  const data = getFeedback(tour);
-  const avgEl = document.querySelector(`.avg[data-tour="${tour}"]`);
-  const cntEl = document.querySelector(`.count[data-tour="${tour}"]`);
-  if (cntEl) cntEl.textContent = data.ratings.length;
-  if (avgEl) {
-    if (data.ratings.length) {
-      const avg = (data.ratings.reduce((a,b)=>a+b,0) / data.ratings.length).toFixed(1);
-      avgEl.textContent = avg;
-    } else {
-      avgEl.textContent = '–';
-    }
-  }
-}
-
-function renderComments(tour) {
-  const data = getFeedback(tour);
-  commentsList.innerHTML = '';
-  if (!data.comments.length) {
-    const li = document.createElement('li');
-    li.textContent = 'No comments yet — be the first!';
-    commentsList.appendChild(li);
-    return;
-  }
-
-  const items = [...data.comments].sort((a,b)=>b.ts - a.ts);
-  for (const c of items.slice(0, 25)) {
-    const li = document.createElement('li');
-    const who = c.name && c.name.trim() ? c.name.trim() : 'Anonymous';
-    li.innerHTML = `<strong>${who}</strong> — ${'★'.repeat(c.stars)}${'☆'.repeat(5-c.stars)}<br>${escapeHtml(c.text)}`;
-    li.style.marginBottom = '8px';
-    commentsList.appendChild(li);
-  }
-}
-
 function escapeHtml(str) {
-  return str.replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]));
+  return (str || '').replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]));
+}
+
+async function apiGetReviews(tour) {
+  const res = await fetch(`/api/reviews/${tour}`);
+  if (!res.ok) throw new Error('Failed to load reviews');
+  return res.json();
+}
+async function apiPostReview(tour_key, user_name, comment, stars) {
+  const res = await fetch('/api/reviews', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ tour_key, user_name, comment, stars })
+  });
+  if (!res.ok) throw new Error('Failed to post review');
+  return res.json();
+}
+
+async function renderComments(tour) {
+  commentsList.innerHTML = 'Loading reviews...';
+  try {
+    const rows = await apiGetReviews(tour);
+    commentsList.innerHTML = '';
+
+    if (!rows.length) {
+      const li = document.createElement('li');
+      li.textContent = 'No comments yet — be the first!';
+      commentsList.appendChild(li);
+      return;
+    }
+
+    for (const c of rows) {
+      const li = document.createElement('li');
+      const who = (c.user_name && c.user_name.trim()) ? c.user_name.trim() : 'Anonymous';
+      li.innerHTML = `<strong>${who}</strong> — ${'★'.repeat(c.stars)}${'☆'.repeat(5-c.stars)}<br>${escapeHtml(c.comment)}`;
+      li.style.marginBottom = '8px';
+      commentsList.appendChild(li);
+    }
+  } catch (e) {
+    commentsList.innerHTML = 'Failed to load reviews.';
+    console.error(e);
+  }
+}
+
+async function updateSummary(tour) {
+  try {
+    const rows = await apiGetReviews(tour);
+    const cntEl = document.querySelector(`.count[data-tour="${tour}"]`);
+    const avgEl = document.querySelector(`.avg[data-tour="${tour}"]`);
+    if (cntEl) cntEl.textContent = rows.length;
+
+    if (avgEl) {
+      if (!rows.length) { avgEl.textContent = '–'; return; }
+      const avg = rows.reduce((s, r) => s + (r.stars || 5), 0) / rows.length;
+      avgEl.textContent = avg.toFixed(1);
+    }
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 document.querySelectorAll('.feedback-btn').forEach(btn => {
   btn.addEventListener('click', (e) => {
     e.preventDefault();
-    const tour = btn.dataset.tour;
+    const tour  = btn.dataset.tour;
     const title = btn.dataset.tourTitle || 'Rate & Comment';
     currentTourKey = tour;
     feedbackTitle.textContent = title;
@@ -367,56 +378,43 @@ document.querySelectorAll('.feedback-btn').forEach(btn => {
 closeFeedback.addEventListener('click', () => {
   feedbackModal.style.display = 'none';
 });
-
 window.addEventListener('click', (e) => {
   if (e.target === feedbackModal) feedbackModal.style.display = 'none';
 });
 
-feedbackForm.addEventListener('submit', (e) => {
+feedbackForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   if (!currentTourKey) return;
-  const text = fbText.value.trim();
-  const name = fbName.value.trim();
+  const text  = fbText.value.trim();
+  const name  = fbName.value.trim();
   const stars = Math.max(1, Math.min(5, currentStars || 5));
   if (!text) return;
 
-  const data = getFeedback(currentTourKey);
-  data.ratings.push(stars);
-  data.comments.push({ name, text, stars, ts: Date.now() });
-  saveFeedback(currentTourKey, data);
-
-  updateSummary(currentTourKey);
-  renderComments(currentTourKey);
-  fbText.value = '';
-  currentStars = 0; renderStars(0);
-  alert('Thanks for your feedback!');
+  try {
+    await apiPostReview(currentTourKey, name, text, stars);
+    fbText.value = '';
+    currentStars = 0; renderStars(0);
+    await renderComments(currentTourKey);
+    await updateSummary(currentTourKey);
+    alert('Thanks for your feedback!');
+  } catch (e2) {
+    alert('Failed to submit review');
+    console.error(e2);
+  }
 });
 
-['ulriken','floyen','nordnes','citycenter','bryggen','aquarium'].forEach(updateSummary);
-
-(function(){
+async function initRatings() {
+  for (const t of ['ulriken','floyen','nordnes','citycenter','bryggen','aquarium']) {
+    await updateSummary(t);
+  }
   const p = new URLSearchParams(location.search);
   const t = p.get('review');
-  if (!t) return;
-  const btn = document.querySelector(`.feedback-btn[data-tour="${t}"]`);
-  if (btn) btn.click();
-})();
-
-// API: load reviews from server
-async function apiGetReviews(tour) {
-  const res = await fetch(`/api/reviews/${tour}`);
-  return res.json();
+  if (t) {
+    const btn = document.querySelector(`.feedback-btn[data-tour="${t}"]`);
+    if (btn) btn.click();
+  }
 }
-
-// API: add review to server
-async function apiPostReview(tour_key, name, comment, stars) {
-  await fetch('/api/reviews', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ tour_key, user_name: name, comment, stars })
-  });
-}
-
+initRatings();
 </script>
 
 </body>
