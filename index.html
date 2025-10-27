@@ -334,10 +334,7 @@ function renderComments(tour) {
     commentsList.appendChild(li);
     return;
   }
-<<<<<<< HEAD
 
-=======
->>>>>>> e8381278bba26e2c9700ea5d467e26f0bbf9eb5b
   const items = [...data.comments].sort((a,b)=>b.ts - a.ts);
   for (const c of items.slice(0, 25)) {
     const li = document.createElement('li');
@@ -396,10 +393,7 @@ feedbackForm.addEventListener('submit', (e) => {
 });
 
 ['ulriken','floyen','nordnes','citycenter','bryggen','aquarium'].forEach(updateSummary);
-<<<<<<< HEAD
-=======
 
-// Авто-открытие формы по ?review=<tour> (например index.html?review=floyen)
 (function(){
   const p = new URLSearchParams(location.search);
   const t = p.get('review');
@@ -407,7 +401,6 @@ feedbackForm.addEventListener('submit', (e) => {
   const btn = document.querySelector(`.feedback-btn[data-tour="${t}"]`);
   if (btn) btn.click();
 })();
->>>>>>> e8381278bba26e2c9700ea5d467e26f0bbf9eb5b
 </script>
 
 </body>
