@@ -264,7 +264,7 @@ window.addEventListener('click', (e) => {
   if (e.target === applyModal) applyModal.style.display = 'none';
 });
 
-// ===================== Ratings & Comments (LocalStorage) =====================
+                 // FEEDBACK
 const feedbackModal = document.getElementById('feedback-modal');
 const closeFeedback = document.getElementById('close-feedback');
 const feedbackTitle = document.getElementById('feedback-title');
@@ -274,9 +274,8 @@ const fbName = document.getElementById('fb-name');
 const fbText = document.getElementById('fb-text');
 const commentsList = document.getElementById('comments-list');
 
-let currentTourKey = null; // e.g. 'ulriken'
+let currentTourKey = null;
 
-// Create clickable 5-star UI
 let currentStars = 0;
 function renderStars(selected) {
   starPicker.innerHTML = '';
@@ -329,9 +328,9 @@ function renderComments(tour) {
     commentsList.appendChild(li);
     return;
   }
-  // newest first
+
   const items = [...data.comments].sort((a,b)=>b.ts - a.ts);
-  for (const c of items.slice(0, 25)) { // keep UI light
+  for (const c of items.slice(0, 25)) {
     const li = document.createElement('li');
     const who = c.name && c.name.trim() ? c.name.trim() : 'Anonymous';
     const d = new Date(c.ts);
@@ -345,7 +344,6 @@ function escapeHtml(str) {
   return str.replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]));
 }
 
-// Open modal from any "Rate & comments" button
 document.querySelectorAll('.feedback-btn').forEach(btn => {
   btn.addEventListener('click', (e) => {
     e.preventDefault();
@@ -369,7 +367,6 @@ window.addEventListener('click', (e) => {
   if (e.target === feedbackModal) feedbackModal.style.display = 'none';
 });
 
-// Submit feedback
 feedbackForm.addEventListener('submit', (e) => {
   e.preventDefault();
   if (!currentTourKey) return;
@@ -383,7 +380,6 @@ feedbackForm.addEventListener('submit', (e) => {
   data.comments.push({ name, text, stars, ts: Date.now() });
   saveFeedback(currentTourKey, data);
 
-  // refresh UI
   updateSummary(currentTourKey);
   renderComments(currentTourKey);
   fbText.value = '';
@@ -391,9 +387,7 @@ feedbackForm.addEventListener('submit', (e) => {
   alert('Thanks for your feedback!');
 });
 
-// Initialize summaries on load
 ['ulriken','floyen','nordnes','citycenter','bryggen','aquarium'].forEach(updateSummary);
-// ===========================================================================
 </script>
 
 </body>

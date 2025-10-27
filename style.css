@@ -644,3 +644,33 @@ input::placeholder {
         flex: 0 0 100%;
     }
 }
+/* Feedback Modal Fixes */
+#feedback-modal .modal-content {
+    text-align: center;
+}
+
+#star-picker span {
+    font-size: 2rem;
+    margin: 0 3px;
+}
+
+#comments-list {
+    list-style: none;
+    padding: 0;
+    text-align: left; /* Чтобы выравнивание не ломало структуру */
+}
+
+#comments-list li {
+    background: #f5f9ff;
+    padding: 10px;
+    border-radius: 12px;
+    margin: 10px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    font-size: 14px;
+}
+
+.rating-summary {
+    margin: 6px 0;
+    font-size: 14px;
+    display: block;
+}
