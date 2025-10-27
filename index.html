@@ -303,17 +303,16 @@ function escapeHtml(str) {
 }
 
 async function apiGetReviews(tour) {
-  const res = await fetch(`/api/reviews/${tour}`);
-  if (!res.ok) throw new Error('Failed to load reviews');
+  const res = await fetch(`https://tourguide-4wz1.onrender.com/api/reviews/${tour}`);
   return res.json();
 }
+
 async function apiPostReview(tour_key, user_name, comment, stars) {
-  const res = await fetch('/api/reviews', {
+  const res = await fetch('https://tourguide-4wz1.onrender.com/api/reviews', {
     method: 'POST',
     headers: {'Content-Type':'application/json'},
     body: JSON.stringify({ tour_key, user_name, comment, stars })
   });
-  if (!res.ok) throw new Error('Failed to post review');
   return res.json();
 }
 
