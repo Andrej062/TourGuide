@@ -644,3 +644,7 @@ input::placeholder {
         flex: 0 0 100%;
     }
 }
+.modal,
+.cart-modal {
+  display: none !important;
+}
