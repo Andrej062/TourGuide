@@ -274,6 +274,33 @@ input::placeholder {
   position: relative;
   animation: fadeIn 0.3s ease;
 }
+.vacancy-list {
+  text-align: left;
+  margin: 1rem 0;
+  padding-left: 0;
+}
+.vacancy-list li {
+  background: #f5f9ff;
+  padding: 10px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  list-style: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+#ask-btn {
+  background-color: rgba(54, 122, 240, 0.9);
+  border: none;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: 0.2s;
+  font-weight: bold;
+}
+#ask-btn:hover {
+  background-color: #367af0;
+  transform: scale(1.05);
+}
 .close {
   position: absolute;
   right: 20px;
