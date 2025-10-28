@@ -1,5 +1,4 @@
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
-updateCart();
 
 const cartIcon = document.getElementById('cart-icon');
 const cartCount = document.getElementById('cart-count');
@@ -42,7 +41,7 @@ function updateCart() {
     const li = document.createElement('li');
     li.innerHTML = `
       ${item.name}
-      <button onclick="removeItem(${index})">Remove</button>
+      <button class="button remove-btn" onclick="removeItem(${index})">Remove</button>
     `;
     cartItemsList.appendChild(li);
   });
@@ -50,6 +49,8 @@ function updateCart() {
 
   localStorage.setItem('cart', JSON.stringify(cart));
 }
+
+updateCart();
 
 function removeItem(index) {
   cart.splice(index, 1);

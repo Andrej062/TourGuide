@@ -689,3 +689,15 @@ input::placeholder {
     height: 80px;
     resize: none;
 }
+.remove-btn {
+  background-color: #ff4d4d;
+  padding: 5px 12px;
+  font-size: 14px;
+  border-radius: 8px;
+  transition: 0.2s ease-in-out;
+}
+
+.remove-btn:hover {
+  background-color: #e60000;
+  transform: scale(1.08);
+}
