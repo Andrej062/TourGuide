@@ -269,8 +269,7 @@ closeApply.addEventListener('click', () => {
 window.addEventListener('click', (e) => {
   if (e.target === applyModal) applyModal.style.display = 'none';
 });
-
-                 // FEEDBACK
+// FEEDBACK
 const feedbackModal = document.getElementById('feedback-modal');
 const closeFeedback  = document.getElementById('close-feedback');
 const feedbackTitle  = document.getElementById('feedback-title');
@@ -281,57 +280,67 @@ const fbText         = document.getElementById('fb-text');
 const commentsList   = document.getElementById('comments-list');
 
 let currentTourKey = null;
-
 let currentStars = 0;
-
 starPicker.dataset.selected = '0';
 
-function renderStars(hover = 0) {
+// Рисуем звезды один раз
+function drawStars() {
   starPicker.innerHTML = '';
-
-  const active = hover > 0 ? hover : currentStars;
-
   for (let i = 1; i <= 5; i++) {
     const s = document.createElement('span');
-    s.textContent = i <= active ? '★' : '☆';
+    s.className = 'star';
+    s.dataset.value = String(i);
+    s.textContent = '☆';
     s.style.cursor = 'pointer';
-
-    s.addEventListener('mouseenter', () => renderStars(i));
-
-    s.addEventListener('click', () => {
-      currentStars = i;
-      starPicker.dataset.selected = String(i);
-      renderStars();
-    });
-
-    s.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      currentStars = i;
-      starPicker.dataset.selected = String(i);
-      renderStars();
-  }, { passive: false });
-
-
-    s.addEventListener('mouseleave', () => {
-      if (!hover) return;
-      renderStars();
-    });
-
     starPicker.appendChild(s);
   }
+  syncStars(0);
 }
 
-renderStars(0);
-
-function escapeHtml(str) {
-  return (str || '').replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]));
+// Обновляем визуал без пересоздания DOM
+function syncStars(hover = 0) {
+  const active = hover || currentStars;
+  starPicker.querySelectorAll('.star').forEach(el => {
+    const v = Number(el.dataset.value);
+    el.textContent = v <= active ? '★' : '☆';
+  });
 }
 
+// Наведение показывает предварительный выбор
+starPicker.addEventListener('mousemove', (e) => {
+  const s = e.target.closest('.star');
+  syncStars(s ? Number(s.dataset.value) : 0);
+});
+
+// Увод мыши возвращает зафиксированный выбор
+starPicker.addEventListener('mouseleave', () => {
+  syncStars(0);
+});
+
+// Клик фиксирует выбор
+starPicker.addEventListener('click', (e) => {
+  const s = e.target.closest('.star');
+  if (!s) return;
+  currentStars = Number(s.dataset.value);
+  starPicker.dataset.selected = String(currentStars);
+  syncStars(0);
+});
+
+// Тач-выбор для мобильных
+starPicker.addEventListener('touchstart', (e) => {
+  const s = e.target.closest('.star');
+  if (!s) return;
+  e.preventDefault();
+  currentStars = Number(s.dataset.value);
+  starPicker.dataset.selected = String(currentStars);
+  syncStars(0);
+}, { passive: false });
+
+// API
 async function apiGetReviews(tour) {
   const res = await fetch(`https://tourguide-4wz1.onrender.com/api/reviews/${tour}`);
   return res.json();
 }
-
 async function apiPostReview(tour_key, user_name, comment, stars) {
   const res = await fetch('https://tourguide-4wz1.onrender.com/api/reviews', {
     method: 'POST',
@@ -341,19 +350,21 @@ async function apiPostReview(tour_key, user_name, comment, stars) {
   return res.json();
 }
 
+function escapeHtml(str) {
+  return (str || '').replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]));
+}
+
 async function renderComments(tour) {
   commentsList.innerHTML = 'Loading reviews...';
   try {
     const rows = await apiGetReviews(tour);
     commentsList.innerHTML = '';
-
     if (!rows.length) {
       const li = document.createElement('li');
       li.textContent = 'No comments yet — be the first!';
       commentsList.appendChild(li);
       return;
     }
-
     for (const c of rows) {
       const li = document.createElement('li');
       const who = (c.user_name && c.user_name.trim()) ? c.user_name.trim() : 'Anonymous';
@@ -373,7 +384,6 @@ async function updateSummary(tour) {
     const cntEl = document.querySelector(`.count[data-tour="${tour}"]`);
     const avgEl = document.querySelector(`.avg[data-tour="${tour}"]`);
     if (cntEl) cntEl.textContent = rows.length;
-
     if (avgEl) {
       if (!rows.length) { avgEl.textContent = '–'; return; }
       const avg = rows.reduce((s, r) => s + (r.stars ?? 5), 0) / rows.length;
@@ -384,6 +394,7 @@ async function updateSummary(tour) {
   }
 }
 
+// Открытие модалки
 document.querySelectorAll('.feedback-btn').forEach(btn => {
   btn.addEventListener('click', (e) => {
     e.preventDefault();
@@ -391,23 +402,23 @@ document.querySelectorAll('.feedback-btn').forEach(btn => {
     const title = btn.dataset.tourTitle || 'Rate & Comment';
     currentTourKey = tour;
     feedbackTitle.textContent = title;
-    currentStars = 0;
-    starPicker.dataset.selected = '0';
-    renderStars(0);
+
+    // Сброс формы и звёзд
     fbName.value = '';
     fbText.value = '';
+    currentStars = 0;
+    starPicker.dataset.selected = '0';
+    syncStars(0);
+
     renderComments(tour);
     feedbackModal.style.display = 'flex';
   });
 });
 
-closeFeedback.addEventListener('click', () => {
-  feedbackModal.style.display = 'none';
-});
-window.addEventListener('click', (e) => {
-  if (e.target === feedbackModal) feedbackModal.style.display = 'none';
-});
+closeFeedback.addEventListener('click', () => feedbackModal.style.display = 'none');
+window.addEventListener('click', (e) => { if (e.target === feedbackModal) feedbackModal.style.display = 'none'; });
 
+// Отправка формы
 feedbackForm.addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -416,20 +427,18 @@ feedbackForm.addEventListener('submit', async (e) => {
     alert("Please select a star rating!");
     return;
   }
-
   if (!currentTourKey) return;
 
   const text  = fbText.value.trim();
   const name  = fbName.value.trim();
-  const stars = Math.max(1, Math.min(5, selected));
   if (!text) return;
 
   try {
-    await apiPostReview(currentTourKey, name, text, stars);
+    await apiPostReview(currentTourKey, name, text, Math.max(1, Math.min(5, selected)));
     fbText.value = '';
     currentStars = 0;
     starPicker.dataset.selected = '0';
-    renderStars(0);
+    syncStars(0);
     await renderComments(currentTourKey);
     await updateSummary(currentTourKey);
     alert('Thanks for your feedback!');
@@ -439,6 +448,8 @@ feedbackForm.addEventListener('submit', async (e) => {
   }
 });
 
+// Инициализация
+drawStars();
 async function initRatings() {
   for (const t of ['ulriken','floyen','nordnes','citycenter','bryggen','aquarium']) {
     await updateSummary(t);

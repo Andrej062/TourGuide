@@ -701,3 +701,6 @@ input::placeholder {
   background-color: #e60000;
   transform: scale(1.08);
 }
+#star-picker .star { 
+  cursor: pointer;
+}
