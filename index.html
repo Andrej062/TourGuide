@@ -351,7 +351,7 @@ async function updateSummary(tour) {
 
     if (avgEl) {
       if (!rows.length) { avgEl.textContent = '–'; return; }
-      const avg = rows.reduce((s, r) => s + (r.stars || 5), 0) / rows.length;
+      const avg = rows.reduce((s, r) => s + (r.stars ?? 5), 0) / rows.length;
       avgEl.textContent = avg.toFixed(1);
     }
   } catch (e) {
