@@ -4,55 +4,82 @@
   <meta charset="UTF-8">
   <title>Your Tour Cart</title>
   <link rel="stylesheet" href="style.css">
+
   <style>
     .cart-page {
       max-width: 700px;
-      margin: 4rem auto;
-      background: rgba(113, 201, 249, 0.1);
-      border-radius: 20px;
-      padding: 2rem;
-      box-shadow: 0 0 15px rgba(0,0,0,0.2);
-    }
-    h1 {
+      margin: 6rem auto;
+      background: rgba(113, 201, 249, 0.15);
+      border-radius: 25px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 5px 25px rgba(0,0,0,0.15);
       text-align: center;
     }
+
+    h1 {
+      margin-bottom: 1.5rem;
+      color: #367af0;
+    }
+
     ul {
       list-style: none;
       padding: 0;
+      margin: 0;
     }
+
     li {
-      margin: 10px 0;
-      padding: 10px;
+      margin: 12px 0;
+      padding: 15px;
       background: white;
-      border-radius: 10px;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      font-weight: 600;
+      transition: 0.2s ease;
     }
-    button {
-      background: rgba(54, 122, 240, 0.8);
-      border: none;
-      color: white;
-      padding: 5px 10px;
-      border-radius: 10px;
-      cursor: pointer;
+
+    li:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.2);
+    }
+
+    #action-btns {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2rem;
+      gap: 1rem;
+    }
+
+    #action-btns button {
+      flex: 1;
+    }
+
+    #confirm-btn {
+      background-color: #367af0;
+    }
+
+    #confirm-btn:hover {
+      background-color: rgba(54, 122, 240, 1);
     }
   </style>
 </head>
+
 <body>
   <div class="cart-page">
     <h1>Your Selected Tours</h1>
     <ul id="cart-list"></ul>
-    <button id="back-btn">Back to Home</button>
-    <button id="confirm-btn">Confirm Order</button>
+
+    <div id="action-btns">
+      <button id="back-btn" class="button">⬅ Back</button>
+      <button id="confirm-btn" class="button">Confirm</button>
+    </div>
   </div>
 
   <script>
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
     const cartList = document.getElementById('cart-list');
-    const backBtn = document.getElementById('back-btn');
-    const confirmBtn = document.getElementById('confirm-btn');
 
     function renderCart() {
       cartList.innerHTML = '';
@@ -60,11 +87,12 @@
         cartList.innerHTML = '<li>Your cart is empty.</li>';
         return;
       }
+
       cart.forEach((item, index) => {
         const li = document.createElement('li');
         li.innerHTML = `
           <span>${item.name}</span>
-          <button onclick="removeItem(${index})">Remove</button>
+          <button onclick="removeItem(${index})" class="button" style="padding: 6px 12px; font-size: 14px;">Remove</button>
         `;
         cartList.appendChild(li);
       });
@@ -76,11 +104,11 @@
       renderCart();
     }
 
-    backBtn.addEventListener('click', () => {
+    document.getElementById('back-btn').addEventListener('click', () => {
       window.location.href = 'index.html';
     });
 
-    confirmBtn.addEventListener('click', () => {
+    document.getElementById('confirm-btn').addEventListener('click', () => {
       if (cart.length === 0) {
         alert('Your cart is empty!');
         return;
