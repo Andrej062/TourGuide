@@ -23,17 +23,18 @@ window.addEventListener('click', (e) => {
   if (e.target === cartModal) cartModal.style.display = 'none';
 });
 
-document.querySelectorAll('.button:not(.feedback-btn)').forEach((btn) => {
-  btn.addEventListener('click', (e) => {
-    const tourInfo = e.target.closest('.tour-info');
-    const name = tourInfo.querySelector('h3').textContent;
-    const desc = tourInfo.querySelector('p').textContent;
-    const tour = { name, desc };
-    cart.push(tour);
-    updateCart();
-    alert(`"${name}" added to your cart!`);
+document.querySelectorAll('.gallery .gallery-item .tour-info .button:not(.feedback-btn)')
+  .forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      const tourInfo = e.target.closest('.tour-info');
+      if (!tourInfo) return;
+      const name = tourInfo.querySelector('h3')?.textContent?.trim() || 'Tour';
+      const desc = tourInfo.querySelector('p')?.textContent?.trim() || '';
+      cart.push({ name, desc });
+      updateCart();
+      alert(`"${name}" added to your cart!`);
+    });
   });
-});
 
 function updateCart() {
   cartItemsList.innerHTML = '';

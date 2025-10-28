@@ -74,7 +74,11 @@ app.post('/api/reviews', (req, res) => {
             INSERT INTO reviews (tour_key, user_name, comment, stars)
             VALUES (?,?,?,?)
         `);
-        stmt.run(tour_key, user_name || null, comment, stars || 5);
+        let st = Number.parseInt(stars, 10);
+        if (!Number.isFinite(st)) st = 5;
+        st = Math.min(5, Math.max(1, st));
+
+        stmt.run(tour_key, user_name || null, comment, st);
         res.json({ success: true });
     } catch (err) {
         console.error(err);
