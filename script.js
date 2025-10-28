@@ -1,4 +1,5 @@
-let cart = [];
+let cart = JSON.parse(localStorage.getItem('cart')) || [];
+updateCart();
 
 const cartIcon = document.getElementById('cart-icon');
 const cartCount = document.getElementById('cart-count');
@@ -46,6 +47,8 @@ function updateCart() {
     cartItemsList.appendChild(li);
   });
   cartCount.textContent = cart.length;
+
+  localStorage.setItem('cart', JSON.stringify(cart));
 }
 
 function removeItem(index) {
