@@ -383,10 +383,14 @@ window.addEventListener('click', (e) => {
 
 feedbackForm.addEventListener('submit', async (e) => {
   e.preventDefault();
+  if (currentStars === 0) {
+  alert("Please select a star rating!");
+  return;
+  }
   if (!currentTourKey) return;
   const text  = fbText.value.trim();
   const name  = fbName.value.trim();
-  const stars = Math.max(1, Math.min(5, currentStars || 5));
+  const stars = Math.max(1, Math.min(5, currentStars));
   if (!text) return;
 
   try {
