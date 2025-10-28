@@ -284,6 +284,8 @@ let currentTourKey = null;
 
 let currentStars = 0;
 
+starPicker.dataset.selected = '0';
+
 function renderStars(hover = 0) {
   starPicker.innerHTML = '';
 
@@ -298,8 +300,17 @@ function renderStars(hover = 0) {
 
     s.addEventListener('click', () => {
       currentStars = i;
+      starPicker.dataset.selected = String(i);
       renderStars();
     });
+
+    s.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      currentStars = i;
+      starPicker.dataset.selected = String(i);
+      renderStars();
+  }, { passive: false });
+
 
     s.addEventListener('mouseleave', () => {
       if (!hover) return;
@@ -380,7 +391,9 @@ document.querySelectorAll('.feedback-btn').forEach(btn => {
     const title = btn.dataset.tourTitle || 'Rate & Comment';
     currentTourKey = tour;
     feedbackTitle.textContent = title;
-    currentStars = 0; renderStars(0);
+    currentStars = 0;
+    starPicker.dataset.selected = '0';
+    renderStars(0);
     fbName.value = '';
     fbText.value = '';
     renderComments(tour);
@@ -397,20 +410,26 @@ window.addEventListener('click', (e) => {
 
 feedbackForm.addEventListener('submit', async (e) => {
   e.preventDefault();
-  if (currentStars === 0) {
-  alert("Please select a star rating!");
-  return;
+
+  const selected = Number(starPicker.dataset.selected || currentStars || 0);
+  if (!selected) {
+    alert("Please select a star rating!");
+    return;
   }
+
   if (!currentTourKey) return;
+
   const text  = fbText.value.trim();
   const name  = fbName.value.trim();
-  const stars = Math.max(1, Math.min(5, currentStars));
+  const stars = Math.max(1, Math.min(5, selected));
   if (!text) return;
 
   try {
     await apiPostReview(currentTourKey, name, text, stars);
     fbText.value = '';
-    currentStars = 0; renderStars(0);
+    currentStars = 0;
+    starPicker.dataset.selected = '0';
+    renderStars(0);
     await renderComments(currentTourKey);
     await updateSummary(currentTourKey);
     alert('Thanks for your feedback!');
