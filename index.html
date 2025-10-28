@@ -283,25 +283,33 @@ const commentsList   = document.getElementById('comments-list');
 let currentTourKey = null;
 
 let currentStars = 0;
-function renderStars(selected) {
-  selected = currentStars > 0 ? currentStars : selected;
+
+function renderStars(hover = 0) {
   starPicker.innerHTML = '';
+
+  const active = hover || currentStars;
+
   for (let i = 1; i <= 5; i++) {
     const s = document.createElement('span');
-    s.textContent = i <= selected ? '★' : '☆';
+    s.textContent = i <= active ? '★' : '☆';
     s.style.cursor = 'pointer';
-    s.dataset.value = i;
-    s.addEventListener('mouseenter', () => {
-      if (currentStars === 0) renderStars(i);
-    });
+
+    s.addEventListener('mouseenter', () => renderStars(i));
+
     s.addEventListener('click', () => {
       currentStars = i;
-      renderStars(currentStars);
+      renderStars();
     });
+
+    s.addEventListener('mouseleave', () => {
+      if (!hover) return;
+      renderStars();
+    });
+
     starPicker.appendChild(s);
-    if (i < 5) starPicker.appendChild(document.createTextNode(' '));
   }
 }
+
 renderStars(0);
 
 function escapeHtml(str) {
