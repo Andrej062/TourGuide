@@ -704,3 +704,64 @@ input::placeholder {
 #star-picker .star { 
   cursor: pointer;
 }
+
+/*Search highlight animation */
+
+.highlight {
+  position: relative;
+  z-index: 5;
+  transform: scale(1.08);
+  transition: transform 0.3s ease;
+  animation: glowPulse 1.3s ease-in-out 2;
+  outline: 6px solid rgba(54, 122, 240, 0.9);
+  border-radius: 25px;
+}
+
+@keyframes glowPulse {
+  0% {
+    outline-color: rgba(54, 122, 240, 0);
+    box-shadow: 0 0 0px rgba(54, 122, 240, 0);
+  }
+  50% {
+    outline-color: rgba(54, 122, 240, 1);
+    box-shadow: 0 0 35px rgba(54, 122, 240, 0.9);
+  }
+  100% {
+    outline-color: rgba(54, 122, 240, 0);
+    box-shadow: 0 0 0px rgba(54, 122, 240, 0);
+  }
+}
+
+/*Suggestions*/
+
+.suggestions-list {
+  position: absolute;
+  top: 42px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 16rem;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  overflow: hidden;
+  z-index: 2000;
+  display: none;
+}
+
+.suggestions-list p {
+  margin: 0;
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.suggestions-list p:last-child {
+  border-bottom: none;
+}
+
+.suggestions-list p:hover {
+  background: rgba(113, 201, 249, 0.25);
+  color: #0d4f88;
+}

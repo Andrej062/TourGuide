@@ -16,6 +16,7 @@
 
     <div class="nav-center">
       <input type="text" id="destination-search" placeholder="Destination?">
+      <div id="suggestions" class="suggestions-list"></div>
     </div>
 
     <div class="nav-right">
@@ -148,8 +149,6 @@
       <button id="checkout-btn" class="button">Checkout</button>
     </div>
   </div>
-
-  <script src="script.js"></script>
   
 <div id="contact-modal" class="modal">
   <div class="modal-content">
@@ -223,6 +222,9 @@
   </div>
 </div>
 
+<script src="script.js"></script>
+
+
 <script>
   const contactBtn = document.getElementById('Contact');
   const contactBtnFooter = document.getElementById('ContactFooter');
@@ -262,6 +264,7 @@ closeApply.addEventListener('click', () => {
 window.addEventListener('click', (e) => {
   if (e.target === applyModal) applyModal.style.display = 'none';
 });
+
 // FEEDBACK
 const feedbackModal = document.getElementById('feedback-modal');
 const closeFeedback  = document.getElementById('close-feedback');
@@ -276,7 +279,6 @@ let currentTourKey = null;
 let currentStars = 0;
 starPicker.dataset.selected = '0';
 
-// Рисуем звезды один раз
 function drawStars() {
   starPicker.innerHTML = '';
   for (let i = 1; i <= 5; i++) {
@@ -290,7 +292,6 @@ function drawStars() {
   syncStars(0);
 }
 
-// Обновляем визуал без пересоздания DOM
 function syncStars(hover = 0) {
   const active = hover || currentStars;
   starPicker.querySelectorAll('.star').forEach(el => {
@@ -299,18 +300,15 @@ function syncStars(hover = 0) {
   });
 }
 
-// Наведение показывает предварительный выбор
 starPicker.addEventListener('mousemove', (e) => {
   const s = e.target.closest('.star');
   syncStars(s ? Number(s.dataset.value) : 0);
 });
 
-// Увод мыши возвращает зафиксированный выбор
 starPicker.addEventListener('mouseleave', () => {
   syncStars(0);
 });
 
-// Клик фиксирует выбор
 starPicker.addEventListener('click', (e) => {
   const s = e.target.closest('.star');
   if (!s) return;
@@ -319,7 +317,6 @@ starPicker.addEventListener('click', (e) => {
   syncStars(0);
 });
 
-// Тач-выбор для мобильных
 starPicker.addEventListener('touchstart', (e) => {
   const s = e.target.closest('.star');
   if (!s) return;
@@ -387,7 +384,6 @@ async function updateSummary(tour) {
   }
 }
 
-// Открытие модалки
 document.querySelectorAll('.feedback-btn').forEach(btn => {
   btn.addEventListener('click', (e) => {
     e.preventDefault();
@@ -396,7 +392,6 @@ document.querySelectorAll('.feedback-btn').forEach(btn => {
     currentTourKey = tour;
     feedbackTitle.textContent = title;
 
-    // Сброс формы и звёзд
     fbName.value = '';
     fbText.value = '';
     currentStars = 0;
@@ -411,7 +406,6 @@ document.querySelectorAll('.feedback-btn').forEach(btn => {
 closeFeedback.addEventListener('click', () => feedbackModal.style.display = 'none');
 window.addEventListener('click', (e) => { if (e.target === feedbackModal) feedbackModal.style.display = 'none'; });
 
-// Отправка формы
 feedbackForm.addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -441,7 +435,6 @@ feedbackForm.addEventListener('submit', async (e) => {
   }
 });
 
-// Инициализация
 drawStars();
 async function initRatings() {
   for (const t of ['ulriken','floyen','nordnes','citycenter','bryggen','aquarium']) {

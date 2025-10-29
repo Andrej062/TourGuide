@@ -80,3 +80,44 @@ if (menuToggle) {
     navRight.classList.toggle('show');
   });
 }
+
+//TOUR SEARCH SCROLL + HIGHLIGHT
+
+// --- Simple Search (Enter to scroll + highlight) ---
+const searchInput = document.getElementById("destination-search");
+
+function normalizeSearch(s) {
+  return (s || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "");
+}
+
+if (searchInput) {
+  searchInput.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter") return;
+    e.preventDefault();
+
+    const q = normalizeSearch(searchInput.value.trim());
+    if (!q) return;
+
+    const items = document.querySelectorAll(".gallery-item");
+    let match = null;
+
+    items.forEach(item => {
+      const title = normalizeSearch(
+        item.querySelector("h3")?.textContent || ""
+      );
+      if (!match && title.includes(q)) match = item;
+    });
+
+    if (!match) {
+      alert("No results found");
+      return;
+    }
+
+    match.scrollIntoView({ behavior: "smooth", inline: "center" });
+    match.classList.add("highlight");
+    setTimeout(() => match.classList.remove("highlight"), 1500);
+  });
+}
