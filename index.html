@@ -159,10 +159,10 @@
     <p><strong>Phone:</strong> +47 123 456 789</p>
     <hr>
     <h3>Leave a Request</h3>
-    <form id="contact-form">
-      <input type="text" id="name" placeholder="Your Name" required>
-      <input type="email" id="email" placeholder="Your Email" required>
-      <textarea id="message" placeholder="Your Message" required></textarea>
+    <form action="https://formspree.io/f/mnnodrld" method="POST" id="contact-form">
+      <input type="text" name="name" placeholder="Your Name" required>
+      <input type="email" name="email" placeholder="Your Email" required>
+      <textarea name="message" placeholder="Your Message" required></textarea>
       <button type="submit">Send</button>
     </form>
   </div>
@@ -244,13 +244,6 @@
 
   window.addEventListener('click', (e) => {
     if (e.target === contactModal) contactModal.style.display = 'none';
-  });
-
-  contactForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    alert('Your message has been sent!');
-    contactForm.reset();
-    contactModal.style.display = 'none';
   });
 
 const applyBtn = document.getElementById('apply-btn');
