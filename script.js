@@ -83,7 +83,6 @@ if (menuToggle) {
 
 //TOUR SEARCH SCROLL + HIGHLIGHT
 
-// --- Simple Search (Enter to scroll + highlight) ---
 const searchInput = document.getElementById("destination-search");
 
 function normalizeSearch(s) {
