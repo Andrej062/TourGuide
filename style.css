@@ -765,3 +765,31 @@ input::placeholder {
   background: rgba(113, 201, 249, 0.25);
   color: #0d4f88;
 }
+
+/* scrollbar */
+
+.gallery-container {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+}
+
+.gallery-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.gallery-container::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.4);
+  border-radius: 4px;
+}
+
+.gallery-container::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.gallery-container::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
