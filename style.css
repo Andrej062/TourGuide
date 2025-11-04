@@ -371,6 +371,26 @@ input::placeholder {
   left: 50%;
   transform: translateX(-50%);
 }
+
+.language-switcher {
+  margin-left: 10px;
+}
+
+#language-select{
+  border-radius: 10px;
+  font-weight: 600;
+  padding: 5px;
+  cursor: pointer;
+  outline: none;
+  border: none;
+}
+
+#language-select .language{
+  border-radius: 10px;
+  border: none;
+  outline: none;
+}
+
 .menu-toggle {
   display: none;
   font-size: 28px;

@@ -1,5 +1,34 @@
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
+const translations = {
+  en: {
+    explore: "Explore",
+    rating: "Rating",
+    about: "About",
+    contact: "Contact",
+    cartEmpty: "Your cart is empty.",
+    addedToCart: "Added to your cart!",
+    checkout: "Checkout",
+    back: "Back",
+    confirm: "Confirm",
+    thankYou: "Thank you for your order! We will contact you soon."
+  },
+  no: {
+    explore: "Utforsk",
+    rating: "Vurdering",
+    about: "Om oss",
+    contact: "Kontakt",
+    cartEmpty: "Handlekurven din er tom.",
+    addedToCart: "Lagt til i handlekurven din!",
+    checkout: "Betal",
+    back: "Tilbake",
+    confirm: "Bekreft",
+    thankYou: "Takk for bestillingen! Vi kontakter deg snart."
+
+  }
+
+}
+
 const cartIcon = document.getElementById('cart-icon');
 const cartCount = document.getElementById('cart-count');
 const cartModal = document.getElementById('cart-modal');

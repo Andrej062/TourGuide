@@ -90,7 +90,7 @@
                 <ul>
                     <li><a id="ContactFooter" href="#">Contact</a></li>
                     <li><a href="about.html">About us</a></li>
-                    <li><a href="#">Apply to work</a></li>
+                    <li><a id="apply-btn" href="#">Apply to work</a></li>
                 </ul>
             </div>
         </div>
@@ -105,22 +105,54 @@
         </div>
     </div>
 
-<div id="contact-modal" class="modal">
-  <div class="modal-content">
-    <span id="close-contact" class="close">&times;</span>
-    <h2>Contact Us</h2>
-    <p><strong>Email:</strong> tourguide@company.com</p>
-    <p><strong>Phone:</strong> +47 123 456 789</p>
+    <div id="contact-modal" class="modal">
+        <div class="modal-content">
+            <span id="close-contact" class="close">&times;</span>
+            <h2>Contact Us</h2>
+            <p><strong>Email:</strong> tourguide@company.com</p>
+            <p><strong>Phone:</strong> +47 123 456 789</p>
+            <hr>
+            <h3>Leave a Request</h3>
+            <form action="https://formspree.io/f/mnnodrld" method="POST" id="contact-form">
+                <input type="text" name="name" placeholder="Your Name" required>
+                <input type="email" name="email" placeholder="Your Email" required>
+                <textarea name="message" placeholder="Your Message" required></textarea>
+                <button type="submit">Send</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="apply-modal" class="modal">
+        <div class="modal-content">
+        <span id="close-apply" class="close">&times;</span>
+        <h2>Work with TourGuide</h2>
+
+        <h3>Available Positions</h3>
+        <ul class="vacancy-list">
+        <li>
+            <strong>Tour Guide</strong>
+            <p>Lead visitors through Bergen’s most stunning routes.</p>
+            <p><strong>Contact:</strong> hr@tourguide.com</p>
+        </li>
+        <li>
+            <strong>Customer Support Assistant</strong>
+            <p>Help travelers find their next adventure.</p>
+            <p><strong>Contact:</strong> jobs@tourguide.com</p>
+        </li>
+        <li>
+            <strong>Photographer</strong>
+        <p>Capture magical moments of our tours.</p>
+        <p><strong>Contact:</strong> media@tourguide.com</p>
+      </li>
+    </ul>
+
     <hr>
-    <h3>Leave a Request</h3>
-    <form action="https://formspree.io/f/mnnodrld" method="POST" id="contact-form">
-        <input type="text" name="name" placeholder="Your Name" required>
-        <input type="email" name="email" placeholder="Your Email" required>
-        <textarea name="message" placeholder="Your Message" required></textarea>
-        <button type="submit">Send</button>
-    </form>
+      <h3>Contact for Job Applications</h3>
+      <p><strong>Email:</strong> hr@tourguide.com</p>
+      <p><strong>Phone:</strong> +47 987 654 321</p>
+      <p><strong>Office address:</strong> Bergen, Bryggen 12</p>
+
   </div>
-</div>
 
     <script src="script.js"></script>
 
@@ -146,6 +178,23 @@
   window.addEventListener('click', (e) => {
     if (e.target === contactModal) contactModal.style.display = 'none';
   });
+
+const applyBtn = document.getElementById('apply-btn');
+const applyModal = document.getElementById('apply-modal');
+const closeApply = document.getElementById('close-apply');
+
+applyBtn.addEventListener('click', (e) => {
+e.preventDefault();
+    applyModal.style.display = 'flex';
+});
+
+closeApply.addEventListener('click', () => {
+    applyModal.style.display = 'none';
+});
+
+window.addEventListener('click', (e) => {
+    if (e.target === applyModal) applyModal.style.display = 'none';
+});
 </script>
 
 </body>
