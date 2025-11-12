@@ -373,7 +373,7 @@ input::placeholder {
 }
 
 .language-switcher {
-  margin-left: 10px;
+  margin-right: 30px;
 }
 
 #language-select{
@@ -812,4 +812,25 @@ input::placeholder {
 .gallery-container::-webkit-scrollbar-track {
   background: rgba(0, 0, 0, 0.1);
   border-radius: 4px;
+}
+
+/* --- FIX: стабильная шапка при переключении языка --- */
+.navbar{
+  flex-wrap: nowrap;
+  min-height: 64px;
+}
+
+.nav-right{
+  margin-left: auto;
+}
+
+a#Contact{
+  margin-left: 0;
+}
+
+.nav-center{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
 }

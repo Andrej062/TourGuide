@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About TourGuide - Our Story</title>
+    <title>About Gems of Bergen - Our Story</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,7 +11,14 @@
     <header>
         <nav class="navbar">
             <div class="nav-left">
-                <p id="comp-name"><a href="index.html">TourGuide</a></p>
+                <p id="comp-name"><a href="index.html">Gems of Bergen</a></p>
+            </div>
+
+            <div class="language-switcher">
+            <select id="language-select">
+                <option class="language" value="EN">EN</option>
+                <option class="language" value="NO">NO</option>
+            </select>
             </div>
 
             <div class="nav-center">
@@ -155,6 +162,7 @@
   </div>
 
     <script src="script.js"></script>
+    <script src="i18n.js"></script>
 
 <script>
   const contactBtn = document.getElementById('Contact');

@@ -20,8 +20,16 @@
 <header>
   <nav class="navbar">
     <div class="nav-left">
-      <p id="comp-name"><a href="index.html">TourGuide</a></p>
+      <p id="comp-name"><a href="index.html">Gems of Bergen</a></p>
     </div>
+
+    <div class="language-switcher">
+      <select id="language-select">
+        <option class="language" value="EN">EN</option>
+        <option class="language" value="NO">NO</option>
+      </select>
+    </div>
+
     <div class="nav-center">
       <input type="text" id="destination-search" placeholder="Destination?">
       <div id="suggestions" class="suggestions-list"></div>
@@ -96,6 +104,7 @@
   </div>
 
 <script src="script.js"></script>
+<script src="i18n.js"></script>
 
 <script>
 
