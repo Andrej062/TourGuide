@@ -22,15 +22,15 @@
     </div>
 
     <div class="nav-center">
-      <input type="text" id="destination-search" placeholder="Destination?">
+      <input type="text" id="destination-search" placeholder="Search for destinations...">
       <div id="suggestions" class="suggestions-list"></div>
     </div>
 
     <div class="nav-right">
-      <a href="index.html">Explore</a>
-      <a href="reviews.html">Rating</a>
-      <a href="about.html">About</a>
-      <a id="Contact" href="#">Contact</a>
+      <a id="explore-link" href="index.html">Explore</a>
+      <a id="reviews-link" href="reviews.html">Rating</a>
+      <a id="about-link" href="about.html">About</a>
+      <a id="contact-link" href="#">Contact</a>
       <div id="cart-icon">🛒 <span id="cart-count">0</span></div>
     </div>
 
@@ -41,8 +41,8 @@
 
   <section class="hero">
     <div class="hero-image">
-      <div class="hero-text">
-        <h1>Bergen</h1>
+      <div class="hero-text" id="hero-text">
+        <h1 id="bergen">Bergen</h1>
         <p>Choose your dream tour and experience hidden gems, and the very best that Bergen has to offer.</p>
       </div>
     </div>
@@ -51,8 +51,8 @@
   <section class="gallery">
     <div class="gallery-container">
       <div class="gallery-item">
-        <img src="pics/ulriken.jpg" alt="Ulriken">
-        <div class="tour-info">
+        <img src="pics/ulriken.jpg" alt="trollskogen">
+        <div id="trollskogen" class="tour-info">
           <h3>Trip to “trollskogen” at fløyen</h3>
           <p>Join us on a trip to Mount Fløyen, <br>
             one of Bergen’s most famous attractions. <br>
@@ -62,7 +62,7 @@
             Norwegian folklore, including tales<br>
            of trolls and other traditional myths. </p>
           <button class="button">Order</button>
-          <div class="rating-summary">
+          <div id="rating" class="rating-summary">
             <small>Rating: <span class="avg" data-tour="ulriken">–</span> ★ (<span class="count" data-tour="ulriken">0</span>)</small>
           </div>
           <button class="button feedback-btn" data-tour="ulriken" data-tour-title="Ulriken Tour">Rate & comments</button>
@@ -71,7 +71,7 @@
 
     <div class="gallery-item">
         <img src="pics/fløyen.jpg" alt="Bergen fløyen">
-          <div class="tour-info">
+          <div id="cinnamun" class="tour-info">
             <h3>Cinnamun bun tour</h3>
             <p>Scandinavia is famous for its delicious<br>
                sweet buns — and here in Bergen, <br>

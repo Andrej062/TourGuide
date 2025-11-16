@@ -23,6 +23,9 @@ a:hover {
 a#Contact{
     margin-left: auto;
 }
+#bergen{
+    font-size: 38px;
+}
 .hero-text {
     padding: 3rem;
     width: 400px;
@@ -31,7 +34,7 @@ a#Contact{
     box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2), -10px -10px 10px rgba(0, 0, 0, 0.1), 10px -10px 10px rgba(0, 0, 0, 0.1), -10px 10px 10px rgba(0, 0, 0, 0.1);
     border-radius: 25px;
     margin-top: -7.5rem ;
-    font-size: 20px;
+    font-size: 21px;
     font-weight: 600;
 }
 .hero {
@@ -551,6 +554,7 @@ input::placeholder {
     border-radius: 20px;
     padding: 30px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    margin: 30px;
 }
 .mission-text {
     flex: 1;
@@ -752,40 +756,6 @@ input::placeholder {
   }
 }
 
-/*Suggestions*/
-
-.suggestions-list {
-  position: absolute;
-  top: 42px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 16rem;
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  overflow: hidden;
-  z-index: 2000;
-  display: none;
-}
-
-.suggestions-list p {
-  margin: 0;
-  padding: 10px;
-  cursor: pointer;
-  border-bottom: 1px solid #f0f0f0;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.suggestions-list p:last-child {
-  border-bottom: none;
-}
-
-.suggestions-list p:hover {
-  background: rgba(113, 201, 249, 0.25);
-  color: #0d4f88;
-}
-
 /* scrollbar */
 
 .gallery-container {
@@ -812,25 +782,4 @@ input::placeholder {
 .gallery-container::-webkit-scrollbar-track {
   background: rgba(0, 0, 0, 0.1);
   border-radius: 4px;
-}
-
-/* --- FIX: стабильная шапка при переключении языка --- */
-.navbar{
-  flex-wrap: nowrap;
-  min-height: 64px;
-}
-
-.nav-right{
-  margin-left: auto;
-}
-
-a#Contact{
-  margin-left: 0;
-}
-
-.nav-center{
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%,-50%);
 }
