@@ -1,3 +1,20 @@
+// === ADMIN ACCESS (temporarily) ===
+
+let isAdmin = false;
+
+document.addEventListener('keydown', (e) => {
+  if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+    const code = prompt("Enter admin code:");
+    if (code === "tourguide") {
+      isAdmin = true;
+      alert("Admin mode enabled");
+      if (currentTourKey) renderComments(currentTourKey);
+    } else {
+      alert("Wrong code");
+    }
+  }
+});
+
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
 const cartIcon = document.getElementById('cart-icon');
@@ -69,6 +86,50 @@ if (checkoutBtn) {
   });
 }
 
+// === Modal Openning ===
+
+const contactBtn = document.getElementById('contact-link');
+const contactBtnFooter = document.getElementById('ContactFooter');
+const contactModal = document.getElementById('contact-modal');
+const closeContact = document.getElementById('close-contact');
+
+  function openContactModal(e) {
+    e.preventDefault();
+    contactModal.style.display = 'flex';
+  }
+
+  if (contactBtn) contactBtn.addEventListener('click', openContactModal);
+  if (contactBtnFooter) contactBtnFooter.addEventListener('click', openContactModal);
+
+  if (closeContact) {
+    closeContact.addEventListener('click', () => {
+      contactModal.style.display = 'none';
+    });
+  }
+
+  window.addEventListener('click', (e) => {
+    if (e.target === contactModal) contactModal.style.display = 'none';
+  });
+
+  const applyBtn = document.getElementById('apply-btn');
+  const applyModal = document.getElementById('apply-modal');
+  const closeApply = document.getElementById('close-apply');
+
+  if (applyBtn && applyModal && closeApply) {
+    applyBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      applyModal.style.display = 'flex';
+    });
+
+    closeApply.addEventListener('click', () => {
+      applyModal.style.display = 'none';
+    });
+
+    window.addEventListener('click', (e) => {
+      if (e.target === applyModal) applyModal.style.display = 'none';
+    });
+  }
+
 const menuToggle = document.getElementById('menu-toggle');
 const navLeft = document.querySelector('.nav-left');
 const navRight = document.querySelector('.nav-right');
@@ -81,7 +142,7 @@ if (menuToggle) {
   });
 }
 
-//TOUR SEARCH SCROLL + HIGHLIGHT
+// ==== TOUR SEARCH SCROLL + HIGHLIGHT ====
 
 const searchInput = document.getElementById("destination-search");
 
@@ -119,4 +180,223 @@ if (searchInput) {
     match.classList.add("highlight");
     setTimeout(() => match.classList.remove("highlight"), 1500);
   });
+}
+
+  // ==== FEEDBACK (rating & comments) ====
+const feedbackModal = document.getElementById('feedback-modal');
+const closeFeedback  = document.getElementById('close-feedback');
+const feedbackTitle  = document.getElementById('feedback-title');
+const starPicker     = document.getElementById('star-picker');
+const feedbackForm   = document.getElementById('feedback-form');
+const fbName         = document.getElementById('fb-name');
+const fbText         = document.getElementById('fb-text');
+const commentsList   = document.getElementById('comments-list');
+
+let currentTourKey = null;
+let currentStars = 0;
+
+if (feedbackModal && closeFeedback && feedbackTitle && starPicker && feedbackForm && fbText && commentsList) {
+  starPicker.dataset.selected = '0';
+
+  function drawStars() {
+    starPicker.innerHTML = '';
+    for (let i = 1; i <= 5; i++) {
+      const s = document.createElement('span');
+      s.className = 'star';
+      s.dataset.value = String(i);
+      s.textContent = '☆';
+      s.style.cursor = 'pointer';
+      starPicker.appendChild(s);
+    }
+    syncStars(0);
+  }
+
+  function syncStars(hover = 0) {
+    const active = hover || currentStars;
+    starPicker.querySelectorAll('.star').forEach(el => {
+      const v = Number(el.dataset.value);
+      el.textContent = v <= active ? '★' : '☆';
+    });
+  }
+
+  starPicker.addEventListener('mousemove', (e) => {
+    const s = e.target.closest('.star');
+    syncStars(s ? Number(s.dataset.value) : 0);
+  });
+
+  starPicker.addEventListener('mouseleave', () => {
+    syncStars(0);
+  });
+
+  starPicker.addEventListener('click', (e) => {
+    const s = e.target.closest('.star');
+    if (!s) return;
+    currentStars = Number(s.dataset.value);
+    starPicker.dataset.selected = String(currentStars);
+    syncStars(0);
+  });
+
+  starPicker.addEventListener('touchstart', (e) => {
+    const s = e.target.closest('.star');
+    if (!s) return;
+    e.preventDefault();
+    currentStars = Number(s.dataset.value);
+    starPicker.dataset.selected = String(currentStars);
+    syncStars(0);
+  }, { passive: false });
+
+  async function apiGetReviews(tour) {
+    const res = await fetch(`https://tourguide-4wz1.onrender.com/api/reviews/${tour}`);
+    return res.json();
+  }
+
+  async function apiPostReview(tour_key, user_name, comment, stars) {
+    const res = await fetch('https://tourguide-4wz1.onrender.com/api/reviews', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ tour_key, user_name, comment, stars })
+    });
+    return res.json();
+  }
+
+  function escapeHtml(str) {
+    return (str || '').replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]));
+  }
+
+  async function renderComments(tour) {
+    commentsList.innerHTML = 'Loading reviews.';
+    try {
+      const rows = await apiGetReviews(tour);
+      commentsList.innerHTML = '';
+      if (!rows.length) {
+        const li = document.createElement('li');
+        li.textContent = 'No comments yet — be the first!';
+        commentsList.appendChild(li);
+        return;
+      }
+      for (const c of rows) {
+        const li = document.createElement('li');
+        const who = (c.user_name && c.user_name.trim()) ? c.user_name.trim() : 'Anonymous';
+        li.innerHTML = `
+            <strong>${who}</strong> — ${'★'.repeat(c.stars)}${'☆'.repeat(5 - c.stars)}
+            ${isAdmin ? `<button class="delete-review" data-id="${c.id}" style="margin-left:8px;font-size:12px;cursor:pointer;">Delete</button>` : ""}
+            <br>${escapeHtml(c.comment)}
+        `;
+        li.style.marginBottom = '8px';
+        commentsList.appendChild(li);
+      }
+    } catch (e) {
+      commentsList.innerHTML = 'Failed to load reviews.';
+      console.error(e);
+    }
+  }
+
+  async function apiDeleteReview(id) {
+  const res = await fetch(`https://tourguide-4wz1.onrender.com/api/reviews/${id}`, {
+    method: 'DELETE'
+  });
+  return res.json();
+}
+
+  async function updateSummary(tour) {
+    try {
+      const rows = await apiGetReviews(tour);
+      const cntEl = document.querySelector(`.count[data-tour="${tour}"]`);
+      const avgEl = document.querySelector(`.avg[data-tour="${tour}"]`);
+      if (cntEl) cntEl.textContent = rows.length;
+      if (avgEl) {
+        if (!rows.length) { avgEl.textContent = '–'; return; }
+        const avg = rows.reduce((s, r) => s + (r.stars ?? 5), 0) / rows.length;
+        avgEl.textContent = avg.toFixed(1);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  document.querySelectorAll('.feedback-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const tour  = btn.dataset.tour;
+      const title = btn.dataset.tourTitle || 'Rate & Comment';
+      currentTourKey = tour;
+      feedbackTitle.textContent = title;
+
+      fbName.value = '';
+      fbText.value = '';
+      currentStars = 0;
+      starPicker.dataset.selected = '0';
+      syncStars(0);
+
+      renderComments(tour);
+      feedbackModal.style.display = 'flex';
+    });
+  });
+
+  closeFeedback.addEventListener('click', () => feedbackModal.style.display = 'none');
+  window.addEventListener('click', (e) => {
+    if (e.target === feedbackModal) feedbackModal.style.display = 'none';
+  });
+
+  commentsList.addEventListener('click', async (e) => {
+  const btn = e.target.closest('.delete-review');
+  if (!btn) return;
+
+  const id = btn.dataset.id;
+  if (!id) return;
+
+  if (!confirm("Delete this review?")) return;
+
+  try {
+    await apiDeleteReview(id);
+    await renderComments(currentTourKey);
+    await updateSummary(currentTourKey);
+  } catch (err) {
+    alert("Failed to delete review.");
+    console.error(err);
+  }
+});
+
+  feedbackForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const selected = Number(starPicker.dataset.selected || currentStars || 0);
+    if (!selected) {
+      alert('Please select a star rating!');
+      return;
+    }
+    if (!currentTourKey) return;
+
+    const text = fbText.value.trim();
+    const name = fbName.value.trim();
+    if (!text) return;
+
+    try {
+      await apiPostReview(currentTourKey, name, text, Math.max(1, Math.min(5, selected)));
+      fbText.value = '';
+      currentStars = 0;
+      starPicker.dataset.selected = '0';
+      syncStars(0);
+      await renderComments(currentTourKey);
+      await updateSummary(currentTourKey);
+      alert('Thanks for your feedback!');
+    } catch (e2) {
+      alert('Failed to submit review');
+      console.error(e2);
+    }
+  });
+
+  drawStars();
+
+  (async function initRatings() {
+    for (const t of ['ulriken','floyen','nordnes','citycenter','bryggen','aquarium']) {
+      await updateSummary(t);
+    }
+    const p = new URLSearchParams(location.search);
+    const t = p.get('review');
+    if (t) {
+      const btn = document.querySelector(`.feedback-btn[data-tour="${t}"]`);
+      if (btn) btn.click();
+    }
+  })();
 }

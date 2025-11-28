@@ -30,7 +30,7 @@
                 <a id="explore-link" href="index.html">Explore</a>
                 <a id="reviews-link" href="reviews.html">Rating</a>
                 <a id="about-link" href="about.html">About</a>
-                <a id="contact-link" href="#">Contact</a>
+                <a id="contact-link" class="Contact" href="#">Contact</a>
             <div id="cart-icon">
                 🛒 <span id="cart-count">0</span>
                 </div>
@@ -176,28 +176,7 @@
     <script src="i18n.js"></script>
 
 <script>
-  const contactBtn = document.getElementById('Contact');
-  const contactBtnFooter = document.getElementById('ContactFooter');
-  const contactModal = document.getElementById('contact-modal');
-  const closeContact = document.getElementById('close-contact');
-  const contactForm = document.getElementById('contact-form');
-
-  function openContactModal(e) {
-    e.preventDefault();
-    contactModal.style.display = 'flex';
-  }
-
-  if (contactBtn) contactBtn.addEventListener('click', openContactModal);
-  if (contactBtnFooter) contactBtnFooter.addEventListener('click', openContactModal);
-
-  closeContact.addEventListener('click', () => {
-    contactModal.style.display = 'none';
-  });
-
-  window.addEventListener('click', (e) => {
-    if (e.target === contactModal) contactModal.style.display = 'none';
-  });
-
+    
 const applyBtn = document.getElementById('apply-btn');
 const applyModal = document.getElementById('apply-modal');
 const closeApply = document.getElementById('close-apply');

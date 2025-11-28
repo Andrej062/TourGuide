@@ -6,14 +6,48 @@
   <title>Reviews — TourGuide</title>
   <link rel="stylesheet" href="style.css" />
   <style>
-    .container{max-width:1000px;margin:0 auto;padding:16px}
-    .toolbar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:12px 0}
-    .toolbar input,.toolbar select{padding:8px;border:1px solid #ddd;border-radius:8px}
-    .review-card{background:#fff;border:1px solid #eee;border-radius:16px;padding:16px;margin:12px 0}
-    .tour-header{display:flex;justify-content:space-between;align-items:center;gap:10px}
-    .stars{font-size:1rem}
-    .muted{opacity:.7}
-    .comment{border-top:1px dashed #eee;padding-top:8px;margin-top:8px}
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+    .toolbar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin: 12px 0;
+    }
+    .toolbar input,
+    .toolbar select {
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+    .review-card {
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 16px;
+      padding: 16px;
+      margin: 12px 0;
+    }
+    .tour-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+    .stars {
+      font-size: 1rem;
+    }
+    .muted {
+      opacity: 0.7;
+    }
+    .comment {
+      border-top: 1px dashed #eee;
+      padding-top: 8px;
+      margin-top: 8px;
+    }
   </style>
 </head>
 <body>
@@ -34,20 +68,25 @@
       <input type="text" id="destination-search" placeholder="Destination?">
       <div id="suggestions" class="suggestions-list"></div>
     </div>
+
     <div class="nav-right">
-      <a href="index.html">Explore</a>
-      <a href="reviews.html" class="active">Rating</a>
-      <a href="about.html">About</a>
-      <a id="Contact" href="#">Contact</a>
+      <a id="explore-link" href="index.html">Explore</a>
+      <a id="reviews-link" href="reviews.html" class="active">Rating</a>
+      <a id="about-link" href="about.html">About</a>
+      <a id="contact-link" href="#">Contact</a>
       <div id="cart-icon">🛒 <span id="cart-count">0</span></div>
     </div>
+
     <div class="menu-toggle" id="menu-toggle">☰</div>
   </nav>
 </header>
 
 <main class="container">
   <h1>All Reviews</h1>
-  <p class="muted">Browse ratings and comments from all tours. To leave a new review, open a tour on the main page and click <em>Rate & comments</em>.</p>
+  <p class="muted">
+    Browse ratings and comments from all tours. To leave a new review, open a tour on the main page and click
+    <em>Rate &amp; comments</em>.
+  </p>
 
   <div class="toolbar">
     <label>
@@ -62,6 +101,7 @@
         <option value="aquarium">Bergen Aquarium Tour</option>
       </select>
     </label>
+
     <label>
       Sort by:
       <select id="sort-by">
@@ -71,13 +111,14 @@
         <option value="rating_asc">Lowest rating</option>
       </select>
     </label>
+
     <input id="search" type="text" placeholder="Search comments..." />
   </div>
 
   <div id="reviews-list"></div>
 </main>
 
-  <div id="contact-modal" class="modal">
+<div id="contact-modal" class="modal">
   <div class="modal-content">
     <span id="close-contact" class="close">&times;</span>
     <h2>Contact Us</h2>
@@ -94,154 +135,124 @@
   </div>
 </div>
 
-  <div id="cart-modal" class="cart-modal">
-    <div class="cart-content">
-      <span id="close-cart">&times;</span>
-      <h2>Your Tours</h2>
-      <ul id="cart-items"></ul>
-      <button id="checkout-btn" class="button">Checkout</button>
-    </div>
+<div id="cart-modal" class="cart-modal">
+  <div class="cart-content">
+    <span id="close-cart">&times;</span>
+    <h2>Your Tours</h2>
+    <ul id="cart-items"></ul>
+    <button id="checkout-btn" class="button">Checkout</button>
   </div>
+</div>
 
 <script src="script.js"></script>
 <script src="i18n.js"></script>
 
 <script>
+  const TOURS = {
+    ulriken: 'Ulriken Tour',
+    floyen: 'Fløyen Tour',
+    nordnes: 'Nordnes Park Tour',
+    citycenter: 'Bergen City Center Tour',
+    bryggen: 'Bryggen and Fish Market Tour',
+    aquarium: 'Bergen Aquarium Tour'
+  };
 
-  const contactBtn = document.getElementById('Contact');
-  const contactBtnFooter = document.getElementById('ContactFooter');
-  const contactModal = document.getElementById('contact-modal');
-  const closeContact = document.getElementById('close-contact');
-  const contactForm = document.getElementById('contact-form');
+  const filterTour = document.getElementById('filter-tour');
+  const sortBy = document.getElementById('sort-by');
+  const search = document.getElementById('search');
+  const list = document.getElementById('reviews-list');
 
-  function openContactModal(e) {
-    e.preventDefault();
-    contactModal.style.display = 'flex';
+  async function apiGetReviews(tour) {
+    const res = await fetch(`https://tourguide-4wz1.onrender.com/api/reviews/${tour}`);
+    return res.json();
   }
 
-  if (contactBtn) contactBtn.addEventListener('click', openContactModal);
-  if (contactBtnFooter) contactBtnFooter.addEventListener('click', openContactModal);
+  async function loadAllReviews() {
+    const all = [];
+    for (const key of Object.keys(TOURS)) {
+      const items = await apiGetReviews(key);
+      for (const r of items) {
+        all.push({ ...r, title: TOURS[key] });
+      }
+    }
+    return all;
+  }
 
-  closeContact.addEventListener('click', () => {
-    contactModal.style.display = 'none';
-  });
+  function escapeHtml(str) {
+    return (str || '').replace(/[&<>"]/g, s => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;'
+    }[s]));
+  }
 
-  window.addEventListener('click', (e) => {
-    if (e.target === contactModal) contactModal.style.display = 'none';
-  });
+  let cachedReviews = [];
 
-const TOURS = {
-  ulriken: 'Ulriken Tour',
-  floyen: 'Fløyen Tour',
-  nordnes: 'Nordnes Park Tour',
-  citycenter: 'Bergen City Center Tour',
-  bryggen: 'Bryggen and Fish Market Tour',
-  aquarium: 'Bergen Aquarium Tour'
-};
+  function renderReviews() {
+    const tourFilter = filterTour.value;
+    const q = (search.value || '').toLowerCase();
+    const sort = sortBy.value;
 
-const filterTour = document.getElementById('filter-tour');
-const sortBy = document.getElementById('sort-by');
-const search = document.getElementById('search');
-const list = document.getElementById('reviews-list');
+    let rows = [...cachedReviews];
 
-// API: load reviews for one tour
-async function apiGetReviews(tour) {
-  const res = await fetch(`https://tourguide-4wz1.onrender.com/api/reviews/${tour}`);
-  return res.json();
-}
+    if (tourFilter !== 'all') {
+      rows = rows.filter(r => r.tour_key === tourFilter);
+    }
 
-// Load and combine all reviews
-async function loadAllReviews() {
-  const all = [];
-  for (const key of Object.keys(TOURS)) {
-    const items = await apiGetReviews(key);
-    for (const r of items) {
-      all.push({ ...r, title: TOURS[key] });
+    if (q) {
+      rows = rows.filter(r =>
+        (r.comment || '').toLowerCase().includes(q) ||
+        (r.user_name || '').toLowerCase().includes(q)
+      );
+    }
+
+    rows.sort((a, b) => {
+      switch (sort) {
+        case 'oldest':
+          return new Date(a.created_at) - new Date(b.created_at);
+        case 'rating_desc':
+          return b.stars - a.stars || new Date(b.created_at) - new Date(a.created_at);
+        case 'rating_asc':
+          return a.stars - b.stars || new Date(b.created_at) - new Date(a.created_at);
+        default:
+          return new Date(b.created_at) - new Date(a.created_at);
+      }
+    });
+
+    list.innerHTML = '';
+
+    if (!rows.length) {
+      list.innerHTML = '<p class="muted">No reviews found.</p>';
+      return;
+    }
+
+    for (const r of rows) {
+      const who = (r.user_name && r.user_name.trim()) || 'Anonymous';
+      const div = document.createElement('div');
+      div.className = 'review-card';
+      div.innerHTML = `
+        <div class="tour-header">
+          <h2>${r.title}</h2>
+          <div class="stars"><strong>${r.stars}</strong> ★</div>
+        </div>
+        <div class="comment">
+          <strong>${who}</strong> — ${new Date(r.created_at).toLocaleString()}
+          <br>${escapeHtml(r.comment)}
+        </div>
+      `;
+      list.appendChild(div);
     }
   }
-  return all;
-}
 
-// Escape HTML text to avoid injection
-function escapeHtml(str) {
-  return (str || '').replace(/[&<>"]/g, s => ({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'
-  }[s]));
-}
+  filterTour.addEventListener('change', renderReviews);
+  sortBy.addEventListener('change', renderReviews);
+  search.addEventListener('input', renderReviews);
 
-let cachedReviews = [];
-
-// Render all filtered and sorted reviews
-function renderReviews() {
-  const tourFilter = filterTour.value;
-  const q = (search.value || '').toLowerCase();
-  const sort = sortBy.value;
-
-  let rows = [...cachedReviews];
-
-  // Filter by tour
-  if (tourFilter !== 'all') {
-    rows = rows.filter(r => r.tour_key === tourFilter);
-  }
-
-  // Text search
-  if (q) {
-    rows = rows.filter(r =>
-      (r.comment || '').toLowerCase().includes(q) ||
-      (r.user_name || '').toLowerCase().includes(q)
-    );
-  }
-
-  // Sorting
-  rows.sort((a, b) => {
-    switch (sort) {
-      case 'oldest':
-        return new Date(a.created_at) - new Date(b.created_at);
-      case 'rating_desc':
-        return b.stars - a.stars || new Date(b.created_at) - new Date(a.created_at);
-      case 'rating_asc':
-        return a.stars - b.stars || new Date(b.created_at) - new Date(a.created_at);
-      default:
-        return new Date(b.created_at) - new Date(a.created_at);
-    }
-  });
-
-  // Render
-  list.innerHTML = '';
-
-  if (!rows.length) {
-    list.innerHTML = '<p class="muted">No reviews found.</p>';
-    return;
-  }
-
-  for (const r of rows) {
-    const who = r.user_name?.trim() || 'Anonymous';
-    const div = document.createElement('div');
-    div.className = 'review-card';
-    div.innerHTML = `
-      <div class="tour-header">
-        <h2>${r.title}</h2>
-        <div class="stars"><strong>${r.stars}</strong> ★</div>
-      </div>
-      <div class="comment">
-        <strong>${who}</strong> — ${new Date(r.created_at).toLocaleString()}
-        <br>${escapeHtml(r.comment)}
-      </div>
-    `;
-    list.appendChild(div);
-  }
-}
-
-// Events
-filterTour.addEventListener('change', renderReviews);
-sortBy.addEventListener('change', renderReviews);
-search.addEventListener('input', renderReviews);
-
-// Init
-(async () => {
-  cachedReviews = await loadAllReviews();
-  renderReviews();
-})();
+  (async () => {
+    cachedReviews = await loadAllReviews();
+    renderReviews();
+  })();
 </script>
 
 </body>
