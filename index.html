@@ -53,17 +53,6 @@
       <img src="pics/ulriken.jpg" alt="trollskogen">
       <div id="trollskogen" class="tour-info">
         <h3>Trip to “trollskogen” at fløyen</h3>
-        <p>
-          Join us on a trip to Mount Fløyen, <br>
-          one of Bergen’s most famous attractions. <br>
-          At the top, you’ll find a mysterious troll forest<br>
-          — the perfect spot for taking photos.
-        </p>
-        <p>
-          Here, you’ll also get to learn about <br>
-          Norwegian folklore, including tales<br>
-          of trolls and other traditional myths.
-        </p>
         <button class="button">Order</button>
         <div id="rating" class="rating-summary">
           <small>Rating: <span class="avg" data-tour="ulriken">–</span> ★ (<span class="count" data-tour="ulriken">0</span>)</small>
@@ -76,18 +65,6 @@
       <img src="pics/fløyen.jpg" alt="Bergen fløyen">
       <div id="cinnamun" class="tour-info">
         <h3>Cinnamun bun tour</h3>
-        <p>
-          Scandinavia is famous for its delicious<br>
-          sweet buns — and here in Bergen, <br>
-          we take great pride in ours!
-        </p>
-        <p>
-          Join our bun tour, where we visit<br>
-          several authentic cafés to taste <br>
-          real Norwegian buns. Warm, fresh,<br>
-          and traditional, packed with butter and<br>
-          sugar — just the way they should be.
-        </p>
         <button class="button">Order</button>
         <div class="rating-summary">
           <small>Rating: <span class="avg" data-tour="floyen">–</span> ★ (<span class="count" data-tour="floyen">0</span>)</small>
@@ -252,6 +229,17 @@
     <ul id="comments-list"></ul>
   </div>
 </div>
+
+<div id="tour-modal" class="modal">
+  <div class="modal-content" style="max-width: 600px; text-align: left;">
+    <span id="close-tour" class="close">&times;</span>
+    <h2 id="tour-modal-title"></h2>
+    <img id="tour-modal-image" style="width:100%; border-radius:12px; margin-bottom:15px;">
+    <p id="tour-modal-text"></p>
+    <button id="tour-modal-order" class="button" style="margin-top:15px;">Order</button>
+  </div>
+</div>
+
 
 <script src="script.js"></script>
 <script src="i18n.js"></script>

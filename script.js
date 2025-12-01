@@ -17,6 +17,108 @@ document.addEventListener('keydown', (e) => {
 
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
+const TOUR_DETAILS = {
+  ulriken: {
+    title: "Trip to “Trollskogen” at Fløyen",
+    img: "pics/ulriken.jpg",
+    text: `
+      Join us on a trip to Mount Fløyen,
+      one of Bergen’s most famous attractions.
+      At the top, you’ll find a mysterious troll forest
+      — the perfect spot for taking photos.
+
+      Discover the magical Troll Forest on Mount Fløyen.
+      The tour includes a scenic ride to the top, historical stories,
+      beautiful viewpoints, and guided exploration of local folklore.
+      Perfect for families and photography lovers!
+      
+      Here, you’ll also get to learn about
+      Norwegian folklore, including tales
+      of trolls and other traditional myths.
+
+    `
+  },
+  floyen: {
+    title: "Cinnamon Bun Tour",
+    img: "pics/fløyen.jpg",
+    text: `
+      Taste the best Scandinavian cinnamon buns in Bergen.
+      Visit several cozy local cafés, learn about traditional baking,
+      and experience Bergen’s sweet culture firsthand.
+    `
+  },
+  nordnes: {
+    title: "Nordnes Park Tour",
+    img: "pics/nordnesparken.jpg",
+    text: `
+      A relaxing walk through Nordnes Park, surrounded by gardens,
+      sea views, charming forest paths, and iconic landmarks.
+      Great for nature lovers and peaceful afternoons.
+    `
+  },
+  citycenter: {
+    title: "Bergen City Center Tour",
+    img: "pics/sentrum.jpg",
+    text: `
+      Explore the heart of Bergen — historical streets, local shops,
+      culture, architecture, and hidden gems only locals know.
+    `
+  },
+  bryggen: {
+    title: "Bryggen & Fish Market Tour",
+    img: "pics/bryggen.jpg",
+    text: `
+      Visit the UNESCO World Heritage Bryggen, discover Viking history,
+      and enjoy fresh seafood at Bergen’s famous fish market.
+    `
+  },
+  aquarium: {
+    title: "Bergen Aquarium Tour",
+    img: "pics/bergen.jpg",
+    text: `
+      Dive into the underwater world of Bergen Aquarium.
+      Penguins, sharks, sea lions, tropical fish and more, with guided stories.
+    `
+  }
+};
+
+// ===== TOUR MODAL =====
+const tourModal = document.getElementById("tour-modal");
+const closeTour = document.getElementById("close-tour");
+const modalTitle = document.getElementById("tour-modal-title");
+const modalImage = document.getElementById("tour-modal-image");
+const modalText = document.getElementById("tour-modal-text");
+const modalOrder = document.getElementById("tour-modal-order");
+
+document.querySelectorAll(".gallery-item").forEach(item => {
+  item.addEventListener("click", (e) => {
+    if (e.target.closest(".button") || e.target.closest(".feedback-btn")) return;
+
+    const infoBlock = item.querySelector(".tour-info");
+    const tourId = infoBlock.querySelector(".feedback-btn")?.dataset.tour;
+
+    if (!tourId || !TOUR_DETAILS[tourId]) return;
+
+    const t = TOUR_DETAILS[tourId];
+
+    modalTitle.textContent = t.title;
+    modalImage.src = t.img;
+    modalText.textContent = t.text.trim();
+    modalOrder.onclick = () => addToCart(t.title);
+
+    tourModal.style.display = "flex";
+  });
+});
+
+closeTour.addEventListener("click", () => {
+  tourModal.style.display = "none";
+});
+
+window.addEventListener("click", (e) => {
+  if (e.target === tourModal) tourModal.style.display = "none";
+});
+
+
 const cartIcon = document.getElementById('cart-icon');
 const cartCount = document.getElementById('cart-count');
 const cartModal = document.getElementById('cart-modal');

@@ -868,3 +868,6 @@ input:hover {
     transform: translateY(0);
   }
 }
+.gallery-container{
+  cursor: pointer;
+}
