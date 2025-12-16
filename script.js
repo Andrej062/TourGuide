@@ -24,31 +24,19 @@ const TOUR_DETAILS = {
     text: `
       Join us on a trip to Mount Fløyen,
       one of Bergen’s most famous attractions.
-      At the top, you’ll find a mysterious troll forest
-      — the perfect spot for taking photos.
-
-      Discover the magical Troll Forest on Mount Fløyen.
-      The tour includes a scenic ride to the top, historical stories,
-      beautiful viewpoints, and guided exploration of local folklore.
-      Perfect for families and photography lovers!
-      
-      Here, you’ll also get to learn about
-      Norwegian folklore, including tales
-      of trolls and other traditional myths.
-
+      At the top, you’ll find a mysterious troll forest — 
+      the perfect spot for taking photos. Here, you’ll also get
+      to learn about Norwegian folklore, including tales of trolls and other traditional myths. 
     `
   },
   cinnamunBun: {
     title: "Cinnamun Bun Tour",
     img: "pics/fløyen.jpg",
     text: `
-      Scandinavia is famous for its delicious sweet buns — and here in Bergen, 
-      we take great pride in ours! Join our bun tour, where we visit several 
-      authentic cafés to taste real Norwegian buns. Warm, fresh, and traditional, 
-      packed with butter and sugar — just the way they should be.
-
-      Visit several cozy local cafés, learn about traditional baking,
-      and experience Bergen’s sweet culture firsthand.
+      Scandinavia is famous for its delicious sweet buns —
+      and here in Bergen, we take great pride in ours! Join our bun tour,
+      where we visit several authentic cafés to taste real Norwegian buns. 
+      Warm, fresh, and traditional, packed with butter and sugar — just the way they should be.
 
     `
   },
@@ -60,8 +48,8 @@ const TOUR_DETAILS = {
       The best of the best! Join us on a walk through the city’s trendiest streets, 
       where we visit some of the best vintage and second-hand stores — from Fretex,
       Vintage Kid and Episode, to Apollo Bella Donna, MAGNUSSENS BRUKT OG ANTIKVITETSHANDEL and more!!
-
       Discover unique treasures, retro fashion, and one-of-a-kind finds while exploring the colorful streets of Bergen.
+      
       Between the shops, we’ll stop by cozy corners and scenic spots perfect for photos — 
       making this tour a great mix of style, sustainability, and sightseeing.
       Perfect for fashion lovers, thrifters, and anyone who wants to experience Bergen in a fun and creative way!
