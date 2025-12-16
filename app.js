@@ -34,12 +34,12 @@ try {
 
 db.exec(`
     INSERT OR IGNORE INTO tours (key, title) VALUES
-    ('ulriken', 'Ulriken Tour'),
-    ('floyen', 'Fløyen Tour'),
-    ('nordnes', 'Nordnes Park Tour'),
-    ('citycenter', 'Bergen City Center Tour'),
-    ('bryggen', 'Bryggen and Fish Market Tour'),
-    ('aquarium', 'Bergen Aquarium Tour');
+    ('trollskogen', 'trollskogen'),
+    ('cinnamunBun', 'Cinnamun Bun Tour'),
+    ('shopTour', 'Shop Tour'),
+    ('brownCheese', 'Brown Cheese Tour'),
+    ('streetArt', 'Street Art Tour'),
+    ('instagramTour', 'Instagram Tour');
 `);
 
 

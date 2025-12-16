@@ -133,6 +133,14 @@ function applyLanguage(lang) {
     if (applyBtn) applyBtn.textContent = t.applyBtn;
 
     localStorage.setItem("lang", lang);
+
+    // const navCenter = document.querySelector(".nav-center");
+
+    // if(lang === "NO"){
+    //     navCenter.classList.add("shift-no");
+    // } else {
+    //     navCenter.classList.remove("shift-no");
+    // }
 }
 
 if (langSelect) {

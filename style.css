@@ -34,6 +34,10 @@ a:hover {
   font-size: 24px;
 }
 
+/* .nav-center.shift-no{
+  transform: translate(-60%, -50%);
+} */
+
 .navbar {
   background-color: rgba(113, 201, 249, 0.59);
   display: flex;
@@ -48,7 +52,7 @@ a:hover {
 .nav-right {
   display: flex;
   align-items: center;
-  gap: 10px;
+  /* gap: 10px; */
 }
 
 .nav-right {
@@ -868,6 +872,6 @@ input:hover {
     transform: translateY(0);
   }
 }
-.gallery-container{
+.gallery-item{
   cursor: pointer;
 }

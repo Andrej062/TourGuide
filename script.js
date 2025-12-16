@@ -18,7 +18,7 @@ document.addEventListener('keydown', (e) => {
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
 const TOUR_DETAILS = {
-  ulriken: {
+  trollskogen: {
     title: "Trip to “Trollskogen” at Fløyen",
     img: "pics/ulriken.jpg",
     text: `
@@ -38,46 +38,67 @@ const TOUR_DETAILS = {
 
     `
   },
-  floyen: {
-    title: "Cinnamon Bun Tour",
+  cinnamunBun: {
+    title: "Cinnamun Bun Tour",
     img: "pics/fløyen.jpg",
     text: `
-      Taste the best Scandinavian cinnamon buns in Bergen.
+      Scandinavia is famous for its delicious sweet buns — and here in Bergen, 
+      we take great pride in ours! Join our bun tour, where we visit several 
+      authentic cafés to taste real Norwegian buns. Warm, fresh, and traditional, 
+      packed with butter and sugar — just the way they should be.
+
       Visit several cozy local cafés, learn about traditional baking,
       and experience Bergen’s sweet culture firsthand.
+
     `
   },
-  nordnes: {
-    title: "Nordnes Park Tour",
+  shopTour: {
+    title: "Shop Tour – Fretex, Episode, Vintage Kid, UFF, Apollo, Slit`an Vintage (and more!)",
     img: "pics/nordnesparken.jpg",
     text: `
-      A relaxing walk through Nordnes Park, surrounded by gardens,
-      sea views, charming forest paths, and iconic landmarks.
-      Great for nature lovers and peaceful afternoons.
+      Get ready for the ultimate shopping adventure in Bergen, 
+      The best of the best! Join us on a walk through the city’s trendiest streets, 
+      where we visit some of the best vintage and second-hand stores — from Fretex,
+      Vintage Kid and Episode, to Apollo Bella Donna, MAGNUSSENS BRUKT OG ANTIKVITETSHANDEL and more!!
+
+      Discover unique treasures, retro fashion, and one-of-a-kind finds while exploring the colorful streets of Bergen.
+      Between the shops, we’ll stop by cozy corners and scenic spots perfect for photos — 
+      making this tour a great mix of style, sustainability, and sightseeing.
+      Perfect for fashion lovers, thrifters, and anyone who wants to experience Bergen in a fun and creative way!
+
     `
   },
-  citycenter: {
-    title: "Bergen City Center Tour",
+  brownCheese: {
+    title: "Brown Cheese Tour",
     img: "pics/sentrum.jpg",
     text: `
-      Explore the heart of Bergen — historical streets, local shops,
-      culture, architecture, and hidden gems only locals know.
+      Taste the world-famous brown cheese right in the heart of Bergen!
+      We’ll take you on a short walk through charming streets and narrow alleys,
+      where you’ll get to try brown cheese ice cream, brown cheese chocolate, and of course, 
+      brown cheese buns! On this tour, you’ll discover some of Bergen’s hidden gems, 
+      with plenty of opportunities for great photos, while enjoying delicious desserts 
+      made from the iconic Norwegian brown cheese.
     `
   },
-  bryggen: {
+  streetArt: {
     title: "Bryggen & Fish Market Tour",
     img: "pics/bryggen.jpg",
     text: `
-      Visit the UNESCO World Heritage Bryggen, discover Viking history,
-      and enjoy fresh seafood at Bergen’s famous fish market.
+      Join us on a colorful and inspiring guided tour through the streets of Bergen, 
+      where we explore the city's unique street art! Experience how international and local artists have transformed walls, 
+      alleys and buildings into living works of art - all with exciting stories and hidden messages. 
+
+      The guide will take you to famous works and hidden gems, and give you insight into both the art and culture that 
+      characterize Bergen's urban landscape. Perfect for art lovers, photographers and curious souls!
     `
   },
-  aquarium: {
+  instagramTour: {
     title: "Bergen Aquarium Tour",
     img: "pics/bergen.jpg",
     text: `
-      Dive into the underwater world of Bergen Aquarium.
-      Penguins, sharks, sea lions, tropical fish and more, with guided stories.
+      Experience the best Instagram spots with us! 
+      Join us on a tour of the most popular and hidden Instagram spots in Bergen city. 
+      We go to the most charming and unique places in Bergen.
     `
   }
 };
@@ -90,34 +111,36 @@ const modalImage = document.getElementById("tour-modal-image");
 const modalText = document.getElementById("tour-modal-text");
 const modalOrder = document.getElementById("tour-modal-order");
 
-document.querySelectorAll(".gallery-item").forEach(item => {
-  item.addEventListener("click", (e) => {
-    if (e.target.closest(".button") || e.target.closest(".feedback-btn")) return;
+if (tourModal && closeTour && modalTitle && modalImage && modalText && modalOrder) {
+  document.querySelectorAll(".gallery-item").forEach(item => {
+    item.addEventListener("click", (e) => {
+      if (e.target.closest(".button") || e.target.closest(".feedback-btn")) return;
 
-    const infoBlock = item.querySelector(".tour-info");
-    const tourId = infoBlock.querySelector(".feedback-btn")?.dataset.tour;
+      const infoBlock = item.querySelector(".tour-info");
+      const tourId = infoBlock?.querySelector(".feedback-btn")?.dataset.tour;
 
-    if (!tourId || !TOUR_DETAILS[tourId]) return;
+      if (!tourId || !TOUR_DETAILS[tourId]) return;
 
-    const t = TOUR_DETAILS[tourId];
+      const t = TOUR_DETAILS[tourId];
+      modalTitle.textContent = t.title;
+      modalImage.src = t.img;
+      modalText.textContent = t.text.trim();
+      modalOrder.onclick = () => addToCart(t.title);
 
-    modalTitle.textContent = t.title;
-    modalImage.src = t.img;
-    modalText.textContent = t.text.trim();
-    modalOrder.onclick = () => addToCart(t.title);
-
-    tourModal.style.display = "flex";
+      tourModal.style.display = "flex";
+    });
   });
-});
 
-closeTour.addEventListener("click", () => {
-  tourModal.style.display = "none";
-});
+  closeTour.addEventListener("click", () => {
+    tourModal.style.display = "none";
+  });
 
-window.addEventListener("click", (e) => {
-  if (e.target === tourModal) tourModal.style.display = "none";
-});
+  window.addEventListener("click", (e) => {
+    if (e.target === tourModal) tourModal.style.display = "none";
+  });
+}
 
+//  ===== CART MODAL =====
 
 const cartIcon = document.getElementById('cart-icon');
 const cartCount = document.getElementById('cart-count');
@@ -459,46 +482,46 @@ if (feedbackModal && closeFeedback && feedbackTitle && starPicker && feedbackFor
   }
 });
 
-  feedbackForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
+feedbackForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
 
-    const selected = Number(starPicker.dataset.selected || currentStars || 0);
-    if (!selected) {
-      alert('Please select a star rating!');
-      return;
-    }
-    if (!currentTourKey) return;
+  const selected = Number(starPicker.dataset.selected || currentStars || 0);
+  if (!selected) {
+    alert('Please select a star rating!');
+    return;
+  }
+  if (!currentTourKey) return;
 
-    const text = fbText.value.trim();
-    const name = fbName.value.trim();
-    if (!text) return;
+  const text = fbText.value.trim();
+  const name = fbName.value.trim();
+  if (!text) return;
 
-    try {
-      await apiPostReview(currentTourKey, name, text, Math.max(1, Math.min(5, selected)));
-      fbText.value = '';
-      currentStars = 0;
-      starPicker.dataset.selected = '0';
-      syncStars(0);
-      await renderComments(currentTourKey);
-      await updateSummary(currentTourKey);
-      alert('Thanks for your feedback!');
-    } catch (e2) {
-      alert('Failed to submit review');
-      console.error(e2);
-    }
-  });
+  try {
+    await apiPostReview(currentTourKey, name, text, Math.max(1, Math.min(5, selected)));
+    fbText.value = '';
+    currentStars = 0;
+    starPicker.dataset.selected = '0';
+    syncStars(0);
+    await renderComments(currentTourKey);
+    await updateSummary(currentTourKey);
+    alert('Thanks for your feedback!');
+  } catch (err) {
+    alert('Failed to submit review.');
+    console.error(err);
+  }
+});
 
-  drawStars();
+drawStars();
 
-  (async function initRatings() {
-    for (const t of ['ulriken','floyen','nordnes','citycenter','bryggen','aquarium']) {
-      await updateSummary(t);
-    }
-    const p = new URLSearchParams(location.search);
-    const t = p.get('review');
-    if (t) {
-      const btn = document.querySelector(`.feedback-btn[data-tour="${t}"]`);
-      if (btn) btn.click();
-    }
-  })();
+(async function initRatings() {
+  for (const t of ['trollskogen','cinnamunBun','shopTour','brownCheese','streetArt','instagramTour']) {
+    await updateSummary(t);
+  }
+  const p = new URLSearchParams(location.search);
+  const t = p.get('review');
+  if (t) {
+    const btn = document.querySelector(`.feedback-btn[data-tour="${t}"]`);
+    if (btn) btn.click();
+  }
+})();
 }

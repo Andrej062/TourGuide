@@ -148,13 +148,14 @@
 <script src="i18n.js"></script>
 
 <script>
+
   const TOURS = {
-    ulriken: 'Ulriken Tour',
-    floyen: 'Fløyen Tour',
-    nordnes: 'Nordnes Park Tour',
-    citycenter: 'Bergen City Center Tour',
-    bryggen: 'Bryggen and Fish Market Tour',
-    aquarium: 'Bergen Aquarium Tour'
+    trollskogen: 'Ulriken Tour',
+    cinnamunBun: 'Fløyen Tour',
+    shopTour: 'Nordnes Park Tour',
+    brownCheese: 'Bergen City Center Tour',
+    streetArt: 'Bryggen and Fish Market Tour',
+    instagramTour: 'Bergen Aquarium Tour'
   };
 
   const filterTour = document.getElementById('filter-tour');
@@ -188,6 +189,13 @@
   }
 
   let cachedReviews = [];
+
+async function apiDeleteReview(id) {
+  const res = await fetch(`https://tourguide-4wz1.onrender.com/api/reviews/${id}`, {
+    method: 'DELETE'
+  });
+  return res.json();
+}
 
   function renderReviews() {
     const tourFilter = filterTour.value;
@@ -244,6 +252,28 @@
       list.appendChild(div);
     }
   }
+
+  list.addEventListener('click', async (e) => {
+  const btn = e.target.closest('.delete-review');
+  if (!btn) return;
+
+  const id = btn.dataset.id;
+  if (!id) {
+    alert("No review id found. Server must return review id.");
+    return;
+  }
+
+  if (!confirm("Delete this review?")) return;
+
+  try {
+    await apiDeleteReview(id);
+    cachedReviews = cachedReviews.filter(r => String(r.id) !== String(id));
+    renderReviews();
+  } catch (err) {
+    alert("Failed to delete review.");
+    console.error(err);
+  }
+});
 
   filterTour.addEventListener('change', renderReviews);
   sortBy.addEventListener('change', renderReviews);
