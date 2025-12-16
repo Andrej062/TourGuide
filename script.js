@@ -125,7 +125,7 @@ if (tourModal && closeTour && modalTitle && modalImage && modalText && modalOrde
       modalTitle.textContent = t.title;
       modalImage.src = t.img;
       modalText.textContent = t.text.trim();
-      modalOrder.onclick = () => addToCart(t.title);
+      modalOrder.onclick = () => addToCart(t.title, t.text.trim());
 
       tourModal.style.display = "flex";
     });
@@ -191,6 +191,12 @@ function updateCart() {
   cartCount.textContent = cart.length;
 
   localStorage.setItem('cart', JSON.stringify(cart));
+}
+
+function addToCart(name, desc = "") {
+  cart.push({ name, desc });
+  updateCart();
+  alert(`"${name}" added to your cart!`);
 }
 
 updateCart();
