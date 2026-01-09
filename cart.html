@@ -136,7 +136,14 @@ document.getElementById('confirm-btn').addEventListener('click', async () => {
   };
 
   try {
-    const res = await fetch('https://tourguide-4wz1.onrender.com/api/orders', {
+    const API_BASE =
+      location.hostname.includes('onrender.com') ||
+      location.hostname === 'localhost' ||
+      location.hostname === '127.0.0.1'
+        ? ''
+        : 'https://tourguide-4wz1.onrender.com';
+
+    const res = await fetch(`${API_BASE}/api/orders`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
