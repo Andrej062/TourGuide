@@ -1,3 +1,4 @@
+const nodemailer = require('nodemailer');
 const express = require('express');
 const path = require('path');
 const Database = require('better-sqlite3');
@@ -7,6 +8,16 @@ app.use(express.json());
 
 const cors = require('cors');
 app.use(cors());
+
+const mailer = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: Number(process.env.SMTP_PORT || 587),
+  secure: false,
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+});
 
 const dbPath = path.join(__dirname, 'tourGuide.db');
 let db;
@@ -30,6 +41,23 @@ try {
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (tour_key) REFERENCES tours(key)
     );
+`);
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    customer_email TEXT NOT NULL,
+    customer_name TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS order_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    order_id INTEGER NOT NULL,
+    item_name TEXT NOT NULL,
+    item_desc TEXT,
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
+  );
 `);
 
 db.exec(`
@@ -100,6 +128,93 @@ app.delete('/api/reviews/:id', (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "DB Error" });
+  }
+});
+
+app.post('/api/orders', async (req, res) => {
+  try {
+    const { customerEmail, customerName, items } = req.body;
+
+    if (!customerEmail || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ error: "Missing email or items" });
+    }
+
+    const insertOrder = db.prepare(
+      "INSERT INTO orders (customer_email, customer_name) VALUES (?, ?)"
+    );
+    const insertItem = db.prepare(
+      "INSERT INTO order_items (order_id, item_name, item_desc) VALUES (?, ?, ?)"
+    );
+
+    const tx = db.transaction(() => {
+      const info = insertOrder.run(customerEmail, customerName || null);
+      const orderId = Number(info.lastInsertRowid);
+
+      for (const it of items) {
+        if (!it || !it.name) continue;
+        insertItem.run(orderId, String(it.name), it.desc ? String(it.desc) : null);
+      }
+      return orderId;
+    });
+
+    const orderId = tx();
+
+    const createdAt = new Date().toISOString();
+    const itemLines = items
+      .filter(it => it && it.name)
+      .map((it, i) => `${i + 1}. ${it.name}${it.desc ? ` — ${it.desc}` : ""}`)
+      .join("\n");
+
+    const subject = `TourGuide receipt #${orderId}`;
+    const from = process.env.MAIL_FROM || process.env.SMTP_USER;
+
+    const staffTo = (process.env.STAFF_EMAILS || "")
+      .split(",")
+      .map(s => s.trim())
+      .filter(Boolean);
+
+    const customerText =
+      `Thanks for your order!\n\n` +
+      `Order ID: ${orderId}\n` +
+      `Time: ${createdAt}\n` +
+      `Email: ${customerEmail}\n` +
+      (customerName ? `Name: ${customerName}\n` : "") +
+      `\nItems:\n${itemLines}\n\n` +
+      `We will contact you soon.`;
+
+    const staffText =
+      `New order received!\n\n` +
+      `Order ID: ${orderId}\n` +
+      `Time: ${createdAt}\n` +
+      `Customer email: ${customerEmail}\n` +
+      (customerName ? `Customer name: ${customerName}\n` : "") +
+      `\nItems:\n${itemLines}`;
+
+    try {
+      await mailer.sendMail({
+        from,
+        to: customerEmail,
+        subject,
+        text: customerText,
+      });
+
+      if (staffTo.length) {
+        await mailer.sendMail({
+          from,
+          to: staffTo,
+          subject: `[STAFF] Order #${orderId}`,
+          text: staffText,
+        });
+      }
+    } catch (mailErr) {
+      console.error("Mail error:", mailErr);
+      return res.status(200).json({ ok: true, orderId, mailWarning: true });
+    }
+
+    res.json({ ok: true, orderId });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
   }
 });
 

@@ -71,6 +71,11 @@
     <h1>Your Selected Tours</h1>
     <ul id="cart-list"></ul>
 
+    <div style="margin-top: 1.5rem; display:flex; gap: 10px; justify-content:center; flex-wrap:wrap;">
+      <input id="customer-name" placeholder="Your name (optional)" style="padding:10px;border-radius:12px;border:1px solid #ddd;min-width:220px;">
+      <input id="customer-email" type="email" placeholder="Email for receipt" required style="padding:10px;border-radius:12px;border:1px solid #ddd;min-width:260px;">
+    </div>
+
     <div id="action-btns">
       <button id="back-btn" class="button">⬅ Back</button>
       <button id="confirm-btn" class="button">Confirm</button>
@@ -110,15 +115,49 @@
       window.location.href = 'index.html';
     });
 
-    document.getElementById('confirm-btn').addEventListener('click', () => {
-      if (cart.length === 0) {
-        alert('Your cart is empty!');
-        return;
-      }
-      alert('Thank you for your order! We will contact you soon.');
-      localStorage.removeItem('cart');
-      window.location.href = 'index.html';
+document.getElementById('confirm-btn').addEventListener('click', async () => {
+  if (cart.length === 0) {
+    alert('Your cart is empty!');
+    return;
+  }
+
+  const email = document.getElementById('customer-email')?.value.trim();
+  const name = document.getElementById('customer-name')?.value.trim() || "";
+
+  if (!email) {
+    alert('Please enter your email!');
+    return;
+  }
+
+  const payload = {
+    customerEmail: email,
+    customerName: name,
+    items: cart.map(x => ({ name: x.name, desc: x.desc || "" }))
+  };
+
+  try {
+    const res = await fetch('/api/orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
     });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data?.error || 'Order failed');
+
+    if (data.mailWarning) {
+      alert(`Order #${data.orderId} saved, but email failed to send.`);
+    } else {
+      alert(`Order placed! Receipt sent to ${email}. Order #${data.orderId}`);
+    }
+
+    localStorage.removeItem('cart');
+    window.location.href = 'index.html';
+  } catch (err) {
+    console.error(err);
+    alert('Could not place order. Please try again.');
+  }
+});
 
     renderCart();
   </script>
