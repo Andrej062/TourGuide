@@ -10,12 +10,21 @@ const cors = require('cors');
 app.use(cors());
 
 const mailer = nodemailer.createTransport({
-  service: "gmail",
+  host: process.env.SMTP_HOST || "smtp.gmail.com",
+  port: Number(process.env.SMTP_PORT || 465),
+  secure: String(process.env.SMTP_SECURE || "true") === "true", // true для 465
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
   },
+  connectionTimeout: 20000,
+  greetingTimeout: 20000,
+  socketTimeout: 20000,
 });
+
+mailer.verify()
+  .then(() => console.log("SMTP OK"))
+  .catch((e) => console.log("SMTP VERIFY FAIL:", e.message));
 
 const dbPath = path.join(__dirname, 'tourGuide.db');
 let db;
