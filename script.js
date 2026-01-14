@@ -785,6 +785,9 @@ async function loadTours() {
     initSearch();
     initFeedback();
     initGlobalClicks();
+    if (!location.hostname.includes("github.io")) {
     await loadTours();
+}
+
   });
 })();
