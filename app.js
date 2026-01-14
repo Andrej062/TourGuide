@@ -17,6 +17,7 @@ try {
     db = new Database(dbPath);
     console.log('Connected to database');
 
+    // Добавляем customer_phone в таблицу orders
     db.exec(`
         CREATE TABLE IF NOT EXISTS tours (key TEXT PRIMARY KEY, title TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS reviews (
@@ -31,6 +32,7 @@ try {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             customer_email TEXT NOT NULL,
             customer_name TEXT,
+            customer_phone TEXT, 
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );
         CREATE TABLE IF NOT EXISTS order_items (
@@ -44,7 +46,8 @@ try {
     console.error("DB Init Error:", err);
 }
 
-const insertOrder = db.prepare('INSERT INTO orders (customer_email, customer_name) VALUES (?, ?)');
+// Обновляем запрос INSERT, чтобы включал телефон
+const insertOrder = db.prepare('INSERT INTO orders (customer_email, customer_name, customer_phone) VALUES (?, ?, ?)');
 const insertItem = db.prepare('INSERT INTO order_items (order_id, item_name, item_desc) VALUES (?, ?, ?)');
 
 app.get('/api/reviews/:tour', (req, res) => {
@@ -68,15 +71,16 @@ app.post('/api/reviews', (req, res) => {
 });
 
 app.post('/api/orders', async (req, res) => {
-    const { customerEmail, customerName, items } = req.body;
+    const { customerEmail, customerName, customerPhone, items } = req.body;
 
     if (!customerEmail || !items || !items.length) {
         return res.status(400).json({ error: "Missing order info" });
     }
 
     try {
+        // Сохранение в БД
         const tx = db.transaction(() => {
-            const info = insertOrder.run(customerEmail, customerName || null);
+            const info = insertOrder.run(customerEmail, customerName || null, customerPhone || null);
             const orderId = Number(info.lastInsertRowid);
             for (const it of items) {
                 if (it && it.name) insertItem.run(orderId, it.name, it.desc || null);
@@ -85,18 +89,56 @@ app.post('/api/orders', async (req, res) => {
         });
         const orderId = tx();
 
-        const createdAt = new Date().toLocaleString();
+        // Подготовка данных для письма
+        const orderDate = new Date().toLocaleString('ru-RU', { 
+            day: '2-digit', month: '2-digit', year: 'numeric', 
+            hour: '2-digit', minute: '2-digit' 
+        });
+
         const itemLines = items
             .map((it, i) => `${i + 1}. ${it.name}`)
             .join("\n");
 
-        const subject = `TourGuide receipt #${orderId}`;
+        const subject = `Order Confirmation #${orderId} - TourGuide`;
         const staffEmails = (process.env.STAFF_EMAILS || "").split(",").map(s => s.trim()).filter(Boolean);
 
-        const customerText = `Thanks for your order!\n\nID: ${orderId}\nItems:\n${itemLines}`;
-        const staffText = `New order #${orderId}\nCustomer: ${customerEmail}\nItems:\n${itemLines}`;
+        const customerText = `
+Hello ${customerName || 'Guest'}!
+
+Thank you for booking with TourGuide. Here is your order summary:
+
+ORDER DETAILS:
+------------------------------------------
+Order ID:   #${orderId}
+Date:       ${orderDate}
+Customer:   ${customerName || 'Guest'}
+Phone:      ${customerPhone || 'Not provided'}
+------------------------------------------
+
+SELECTED TOURS:
+${itemLines}
+
+------------------------------------------
+Total items: ${items.length}
+
+We will contact you shortly via email or phone to finalize the details.
+Have a great day!
+        `;
+
+        const staffText = `
+NEW ORDER RECEIVED!
+Order ID: #${orderId}
+Client:   ${customerName || 'Guest'}
+Email:    ${customerEmail}
+Phone:    ${customerPhone || 'None'}
+Date:     ${orderDate}
+
+Items:
+${itemLines}
+        `;
 
         try {
+            // Отправка клиенту
             await resend.emails.send({
                 from: 'onboarding@resend.dev',
                 to: customerEmail,
@@ -104,6 +146,7 @@ app.post('/api/orders', async (req, res) => {
                 text: customerText,
             });
 
+            // Отправка персоналу
             if (staffEmails.length) {
                 await resend.emails.send({
                     from: 'onboarding@resend.dev',
@@ -114,6 +157,7 @@ app.post('/api/orders', async (req, res) => {
             }
         } catch (mailErr) {
             console.error("Resend Error:", mailErr);
+            // Возвращаем успех, так как в базу заказ уже попал
             return res.json({ ok: true, orderId, mailWarning: true });
         }
 
@@ -129,5 +173,6 @@ app.use(express.static(__dirname));
 app.get(/.*/, (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
+
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));

@@ -530,32 +530,36 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!confirmBtn) return;
 
   confirmBtn.addEventListener('click', async () => {
+    const firstName = document.getElementById('customer-name')?.value?.trim() || "";
+    const lastName = document.getElementById('customer-surname')?.value?.trim() || "";
+    const customerPhone = document.getElementById('customer-phone')?.value?.trim() || "";
+    const customerEmail = document.getElementById('customer-email')?.value?.trim() || "";
+
+    const currentCart = JSON.parse(localStorage.getItem('cart')) || [];
+    
+    if (!currentCart.length) {
+      alert("Your cart is empty.");
+      return;
+    }
+
+    if (!customerEmail || !firstName) {
+      alert("Please enter at least your First Name and Email.");
+      return;
+    }
+
     const btn = confirmBtn;
     btn.disabled = true;
     const oldText = btn.textContent;
     btn.textContent = "Placing order...";
 
+    const payload = {
+      customerName: `${firstName} ${lastName}`.trim() || "Guest",
+      customerEmail,
+      customerPhone,
+      items: currentCart
+    };
+
     try {
-      const cart = JSON.parse(localStorage.getItem('cart')) || [];
-      const customerName = document.getElementById('customer-name')?.value?.trim() || "";
-      const customerEmail = document.getElementById('customer-email')?.value?.trim() || "";
-
-      if (!cart.length) {
-        alert("Your cart is empty.");
-        return;
-      }
-
-      if (!customerEmail) {
-        alert("Please enter your email.");
-        return;
-      }
-
-      const payload = {
-        customerName,
-        customerEmail,
-        items: cart
-      };
-
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 70000);
 
@@ -572,18 +576,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
       clearTimeout(timeout);
 
-      let data = {};
-      try {
-        data = await res.json();
-      } catch {}
+      const data = await res.json();
 
       if (!res.ok || !data.ok) {
-        alert(data.error || "Could not place order. Please try again.");
-        return;
+        throw new Error(data.error || "Server error");
       }
 
       if (data.mailWarning) {
-        alert(`Order #${data.orderId} saved, but email failed to send.`);
+        alert(`Order #${data.orderId} saved, but email failed to send. Our team will contact you manually.`);
       } else {
         alert(`Order #${data.orderId} placed successfully! Check your email.`);
       }
@@ -592,7 +592,12 @@ document.addEventListener("DOMContentLoaded", () => {
       window.location.href = "index.html";
 
     } catch (e) {
-      alert("Server is waking up. Please try again in a few seconds.");
+      console.error("Order error:", e);
+      if (e.name === 'AbortError') {
+        alert("Request timed out. Please check your internet connection.");
+      } else {
+        alert("Could not place order. The server might be waking up. Please try again in 10 seconds.");
+      }
     } finally {
       btn.disabled = false;
       btn.textContent = oldText;
