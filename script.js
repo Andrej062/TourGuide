@@ -167,6 +167,11 @@ document.querySelectorAll('.gallery .gallery-item .tour-info .button:not(.feedba
   });
 
 function updateCart() {
+  if (!cartItemsList || !cartCount) {
+    localStorage.setItem('cart', JSON.stringify(cart));
+    return;
+  }
+
   cartItemsList.innerHTML = '';
   cart.forEach((item, index) => {
     const li = document.createElement('li');
@@ -176,8 +181,8 @@ function updateCart() {
     `;
     cartItemsList.appendChild(li);
   });
-  cartCount.textContent = cart.length;
 
+  cartCount.textContent = cart.length;
   localStorage.setItem('cart', JSON.stringify(cart));
 }
 
@@ -593,4 +598,48 @@ document.addEventListener("DOMContentLoaded", () => {
       btn.textContent = oldText;
     }
   });
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  const cartList = document.getElementById("cart-list");
+  if (!cartList) return;
+
+  const backBtn = document.getElementById("back-btn");
+  const confirmBtn = document.getElementById("confirm-btn");
+
+  function renderCartPage() {
+    cartList.innerHTML = "";
+    if (!cart.length) {
+      const li = document.createElement("li");
+      li.textContent = "Your cart is empty.";
+      cartList.appendChild(li);
+      return;
+    }
+
+    cart.forEach((item, index) => {
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <span>${item.name}</span>
+        <button class="button" data-remove="${index}" style="padding:6px 12px; font-size:14px;">Remove</button>
+      `;
+      cartList.appendChild(li);
+    });
+  }
+
+  cartList.addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-remove]");
+    if (!btn) return;
+    const index = Number(btn.dataset.remove);
+    cart.splice(index, 1);
+    updateCart();
+    renderCartPage();
+  });
+
+  if (backBtn) {
+    backBtn.addEventListener("click", () => {
+      window.location.href = "index.html";
+    });
+  }
+
+  renderCartPage();
 });
