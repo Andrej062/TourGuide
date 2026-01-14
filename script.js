@@ -519,3 +519,78 @@ drawStars();
   }
 })();
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  const confirmBtn = document.getElementById('confirm-btn');
+  if (!confirmBtn) return;
+
+  confirmBtn.addEventListener('click', async () => {
+    const btn = confirmBtn;
+    btn.disabled = true;
+    const oldText = btn.textContent;
+    btn.textContent = "Placing order...";
+
+    try {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const customerName = document.getElementById('customer-name')?.value?.trim() || "";
+      const customerEmail = document.getElementById('customer-email')?.value?.trim() || "";
+
+      if (!cart.length) {
+        alert("Your cart is empty.");
+        return;
+      }
+
+      if (!customerEmail) {
+        alert("Please enter your email.");
+        return;
+      }
+
+      const payload = {
+        customerName,
+        customerEmail,
+        items: cart
+      };
+
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 70000);
+
+      const API_BASE = location.hostname.includes("localhost")
+        ? "http://localhost:3000"
+        : "https://tourguide-4wz1.onrender.com";
+
+      const res = await fetch(`${API_BASE}/api/orders`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        signal: controller.signal
+      });
+
+      clearTimeout(timeout);
+
+      let data = {};
+      try {
+        data = await res.json();
+      } catch {}
+
+      if (!res.ok || !data.ok) {
+        alert(data.error || "Could not place order. Please try again.");
+        return;
+      }
+
+      if (data.mailWarning) {
+        alert(`Order #${data.orderId} saved, but email failed to send.`);
+      } else {
+        alert(`Order #${data.orderId} placed successfully! Check your email.`);
+      }
+
+      localStorage.removeItem('cart');
+      window.location.href = "index.html";
+
+    } catch (e) {
+      alert("Server is waking up. Please try again in a few seconds.");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = oldText;
+    }
+  });
+});
