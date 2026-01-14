@@ -103,42 +103,41 @@ app.post('/api/orders', async (req, res) => {
         const staffEmails = (process.env.STAFF_EMAILS || "").split(",").map(s => s.trim()).filter(Boolean);
 
         const customerText = `
-Hello ${customerName || 'Guest'}!
+          Hello ${customerName || 'Guest'}!
 
-Thank you for booking with TourGuide. Here is your order summary:
+          Thank you for booking with Gems Of Bergen. Here is your order summary:
 
-ORDER DETAILS:
-------------------------------------------
-Order ID:   #${orderId}
-Date:       ${orderDate}
-Customer:   ${customerName || 'Guest'}
-Phone:      ${customerPhone || 'Not provided'}
-------------------------------------------
+          ORDER DETAILS:
+          ------------------------------------------
+          Order ID:   #${orderId}
+          Date:       ${orderDate}
+          Customer:   ${customerName || 'Guest'}
+          Phone:      ${customerPhone || 'Not provided'}
+          ------------------------------------------
 
-SELECTED TOURS:
-${itemLines}
+          SELECTED TOURS:
+          ${itemLines}
 
-------------------------------------------
-Total items: ${items.length}
+          ------------------------------------------
+          Total items: ${items.length}
 
-We will contact you shortly via email or phone to finalize the details.
-Have a great day!
-        `;
+          We will contact you shortly via email or phone to finalize the details.
+          Have a great day!
+                  `;
 
-        const staffText = `
-NEW ORDER RECEIVED!
-Order ID: #${orderId}
-Client:   ${customerName || 'Guest'}
-Email:    ${customerEmail}
-Phone:    ${customerPhone || 'None'}
-Date:     ${orderDate}
+                  const staffText = `
+          NEW ORDER RECEIVED!
+          Order ID: #${orderId}
+          Client:   ${customerName || 'Guest'}
+          Email:    ${customerEmail}
+          Phone:    ${customerPhone || 'None'}
+          Date:     ${orderDate}
 
-Items:
-${itemLines}
-        `;
+          Items:
+          ${itemLines}
+                  `;
 
         try {
-            // Отправка клиенту
             await resend.emails.send({
                 from: 'onboarding@resend.dev',
                 to: customerEmail,
@@ -146,7 +145,6 @@ ${itemLines}
                 text: customerText,
             });
 
-            // Отправка персоналу
             if (staffEmails.length) {
                 await resend.emails.send({
                     from: 'onboarding@resend.dev',
@@ -157,7 +155,6 @@ ${itemLines}
             }
         } catch (mailErr) {
             console.error("Resend Error:", mailErr);
-            // Возвращаем успех, так как в базу заказ уже попал
             return res.json({ ok: true, orderId, mailWarning: true });
         }
 
