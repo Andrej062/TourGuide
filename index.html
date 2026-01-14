@@ -221,6 +221,17 @@
   </div>
 </div>
 
+<div id="admin-panel" style="display: none; background: #f4f4f4; padding: 20px; border-radius: 10px; margin: 20px;">
+  <h3>Admin: Add New Tour</h3>
+  <form id="add-tour-form">
+    <input type="text" id="new-tour-key" placeholder="tour-id (e.g. opera-house)" required>
+    <input type="text" id="new-tour-title" placeholder="Tour Title" required>
+    <input type="text" id="new-tour-img" placeholder="Image URL (pics/name.jpg)" required>
+    <textarea id="new-tour-text" placeholder="Tour Description" required></textarea>
+    <button type="submit" class="button">Save Tour</button>
+  </form>
+</div>
+
 
 <script src="script.js"></script>
 <script src="i18n.js"></script>

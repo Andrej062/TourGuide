@@ -173,3 +173,36 @@ app.get(/.*/, (req, res) => {
 
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+
+// Получить все туры из БД
+app.get('/api/tours', (req, res) => {
+    try {
+        const tours = db.prepare('SELECT * FROM tours').all();
+        // Парсим JSON текста и картинок, если вы решите хранить их там
+        res.json(tours);
+    } catch (err) {
+        res.status(500).json({ error: "DB Error" });
+    }
+});
+
+// Добавить новый тур
+app.post('/api/tours', (req, res) => {
+    const { key, title, img, text } = req.body;
+    try {
+        const stmt = db.prepare('INSERT INTO tours (key, title, img, text) VALUES (?, ?, ?, ?)');
+        stmt.run(key, title, img, text);
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: "Already exists or DB error" });
+    }
+});
+
+// Удалить тур
+app.delete('/api/tours/:key', (req, res) => {
+    try {
+        db.prepare('DELETE FROM tours WHERE key = ?').run(req.params.key);
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: "DB Error" });
+    }
+});
