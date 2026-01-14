@@ -12,15 +12,19 @@ app.use(cors());
 const mailer = nodemailer.createTransport({
   host: process.env.SMTP_HOST || "smtp.gmail.com",
   port: Number(process.env.SMTP_PORT) || 587,
+  // Если порт 465, то secure: true. Если 587, то secure: false.
   secure: process.env.SMTP_PORT == 465, 
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
   },
   tls: {
-    rejectUnauthorized: false 
+    // Помогает избежать проблем с сертификатами в некоторых сетях
+    rejectUnauthorized: false
   },
-  connectionTimeout: 20000, // 20 секунд
+  connectionTimeout: 20000,
+  greetingTimeout: 20000,
+  socketTimeout: 20000,
 });
 
 mailer.verify()
