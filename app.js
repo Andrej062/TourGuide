@@ -12,24 +12,24 @@ app.use(cors());
 const mailer = nodemailer.createTransport({
   host: process.env.SMTP_HOST || "smtp.gmail.com",
   port: Number(process.env.SMTP_PORT) || 587,
-  // Если порт 465, то secure: true. Если 587, то secure: false.
-  secure: process.env.SMTP_PORT == 465, 
+  secure: false, // Обязательно false для 587
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
   },
   tls: {
-    // Помогает избежать проблем с сертификатами в некоторых сетях
-    rejectUnauthorized: false
+    rejectUnauthorized: false,
+    minVersion: 'TLSv1.2' // Принудительно используем современный протокол
   },
-  connectionTimeout: 20000,
-  greetingTimeout: 20000,
-  socketTimeout: 20000,
+  pool: true, // Использовать пул соединений
+  maxConnections: 1,
+  connectionTimeout: 30000, // Увеличим до 30 сек
+  greetingTimeout: 30000,
 });
 
-mailer.verify()
-  .then(() => console.log("SMTP OK"))
-  .catch((e) => console.log("SMTP VERIFY FAIL:", e.message));
+// mailer.verify()
+//   .then(() => console.log("SMTP OK"))
+//   .catch((e) => console.log("SMTP VERIFY FAIL:", e.message));
 
 const dbPath = path.join(__dirname, 'tourGuide.db');
 let db;
