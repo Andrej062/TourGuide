@@ -136,53 +136,67 @@
     tourModal.style.display = "flex";
   }
 
-  async function loadTours() {
-    const container = $(".gallery-container") || $(".gallery");
-    if (!container) return;
+function fixImgPath(p) {
+  if (!p) return "";
+  const s = String(p).trim();
+  if (/^https?:\/\//i.test(s)) return s;
 
-    try {
-      const res = await fetch(`${API_BASE}/api/tours`);
-      if (!res.ok) return;
+  const clean = s.replace(/^\/+/, "");
+  if (location.hostname.includes("github.io")) return `/TourGuide/${clean}`;
+  return `/${clean}`;
+}
 
-      const tours = await res.json();
-      if (!Array.isArray(tours) || !tours.length) return;
+async function loadTours() {
+  const container = $(".gallery-container") || $(".gallery");
+  if (!container) return;
 
-      container.innerHTML = "";
+  try {
+    const res = await fetch(`${API_BASE}/api/tours`);
+    if (!res.ok) return;
 
-      tours.forEach((t) => {
-        const item = document.createElement("div");
-        item.className = "gallery-item";
-        item.innerHTML = `
-          <img src="${escapeHtml(t.img || "")}" alt="${escapeHtml(t.title || "")}">
-          <div class="tour-info">
-            <h3>${escapeHtml(t.title || "")}</h3>
-            <p>${escapeHtml(String(t.text || "").slice(0, 100))}...</p>
-            <button class="button order-btn" data-title="${escapeHtml(t.title || "")}" data-desc="${escapeHtml(t.text || "")}">Order</button>
-            <div class="rating-summary">
-              <small>Rating: <span class="avg" data-tour="${escapeHtml(t.key || "")}">–</span> ★ (<span class="count" data-tour="${escapeHtml(t.key || "")}">0</span>)</small>
-            </div>
-            <button class="button feedback-btn" data-tour="${escapeHtml(t.key || "")}" data-tour-title="${escapeHtml(t.title || "")}">Rate & comments</button>
-            ${
-              isAdmin
-                ? `<button class="button delete-tour-btn" style="background:red; margin-top:5px;" data-key="${escapeHtml(t.key || "")}">Delete Tour</button>`
-                : ""
-            }
+    const tours = await res.json();
+    if (!Array.isArray(tours) || !tours.length) return;
+
+    container.innerHTML = "";
+
+    tours.forEach((t) => {
+      const item = document.createElement("div");
+      item.className = "gallery-item";
+      item.innerHTML = `
+        <img src="${escapeHtml(fixImgPath(t.img || ""))}" alt="${escapeHtml(t.title || "")}">
+        <div class="tour-info">
+          <h3>${escapeHtml(t.title || "")}</h3>
+          <p>${escapeHtml(String(t.text || "").substring(0, 100))}...</p>
+          <button class="button order-btn"
+            data-title="${escapeHtml(t.title || "")}"
+            data-desc="${escapeHtml(t.text || "")}">
+            Order
+          </button>
+          <div class="rating-summary">
+            <small>Rating: <span class="avg" data-tour="${escapeHtml(t.key || "")}">–</span> ★ (<span class="count" data-tour="${escapeHtml(t.key || "")}">0</span>)</small>
           </div>
-        `;
+          <button class="button feedback-btn" data-tour="${escapeHtml(t.key || "")}" data-tour-title="${escapeHtml(t.title || "")}">Rate & comments</button>
+          ${
+            isAdmin
+              ? `<button class="button delete-tour-btn" style="background:red; margin-top:5px;" data-key="${escapeHtml(t.key || "")}">Delete Tour</button>`
+              : ""
+          }
+        </div>
+      `;
 
-        item.addEventListener("click", (e) => {
-          if (e.target.closest(".button")) return;
-          openTourModal({ title: t.title, img: t.img, text: t.text });
-        });
-
-        container.appendChild(item);
+      item.addEventListener("click", (e) => {
+        if (e.target.closest(".button")) return;
+        openTourModal({ title: t.title, img: fixImgPath(t.img || ""), text: t.text });
       });
 
-      await initRatings();
-    } catch (e) {
-      console.error(e);
-    }
+      container.appendChild(item);
+    });
+
+    if (typeof initRatings === "function") await initRatings();
+  } catch (err) {
+    console.error("Failed to load tours:", err);
   }
+}
 
   const feedback = {
     modal: null,
