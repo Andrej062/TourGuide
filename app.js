@@ -12,6 +12,7 @@ const API_PORT = process.env.PORT || 10000;
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 const dbPath = path.join(__dirname, "tourGuide.db");
+//const dbPath = process.env.DB_PATH ? path.resolve(process.env.DB_PATH) : path.join(__dirname, "tourGuide.db");
 const db = new Database(dbPath);
 
 function ensureToursSchema() {
@@ -153,6 +154,7 @@ app.post("/api/reviews", (req, res) => {
       comment,
       stars
     );
+    console.log(tour_key, user_name, comment, stars);
     res.json({ ok: true });
   } catch (e) {
     res.status(500).json({ error: "DB Error" });
